@@ -1,0 +1,53 @@
+# ==========================================
+# 1. Dependencies (SANGAT BERAT - Wajib Dikecualikan)
+# ==========================================
+node_modules/
+**/node_modules/
+vendor/
+**/vendor/
+
+# ==========================================
+# 2. Build Output & Temporary Cache
+# ==========================================
+dist/
+**/dist/
+build/
+**/build/
+.vite/
+**/vite.config.js.timestamp-*
+
+# ==========================================
+# 3. Backend Writable / Logs / Cache (CodeIgniter)
+# ==========================================
+writable/cache/*
+!writable/cache/index.html
+writable/logs/*
+!writable/logs/index.html
+writable/session/*
+!writable/session/index.html
+writable/debugbar/*
+!writable/debugbar/index.html
+writable/uploads/*
+!writable/uploads/index.html
+**/writable/cache/*
+**/writable/logs/*
+**/writable/session/*
+**/writable/debugbar/*
+**/writable/uploads/*
+
+# ==========================================
+# 4. File Konfigurasi Sensitif & Rahasia (Password/DB)
+# ==========================================
+.env
+.env.*
+!.env.example
+*.env
+
+# ==========================================
+# 5. Editor & OS Junk Files
+# ==========================================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log

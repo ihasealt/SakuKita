@@ -1,0 +1,147 @@
+@import "tailwindcss";
+
+/* SakuKita AI Financial Tracker - Dual Theme System (Lumi & Raka) */
+
+
+:root {
+  --font-primary: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  --font-accent: 'Outfit', sans-serif;
+  --font-cute: 'Quicksand', cursive, sans-serif;
+}
+
+/* ========================================================================= */
+/* THEME 1: LUMI (Warm Friendly Vibrant Orange & Soft Cream) */
+/* ========================================================================= */
+.theme-lumi {
+  --bg-main: #FFF8F2;
+  --bg-card: #FFFFFF;
+  --bg-surface: #FFEDD5;
+  --border-card: #FED7AA;
+  --border-accent: #FB923C;
+
+  --text-primary: #431407;
+  --text-secondary: #7C2D12;
+  --text-muted: #9A3412;
+
+  --accent-main: #EA580C;
+  --accent-hover: #C2410C;
+  --accent-light: #FFEDD5;
+  --accent-badge: #FED7AA;
+
+  --mascot-bg: #FFF7ED;
+  --mascot-border: #FDBA74;
+  --mascot-text: #9A3412;
+
+  --card-shadow: 0 10px 30px -5px rgba(234, 88, 12, 0.12);
+}
+
+/* ========================================================================= */
+/* THEME 2: RAKA (Galak, Disiplin, Sleek Slate Gray & Titanium Zinc) */
+/* ========================================================================= */
+.theme-raka {
+  --bg-main: #090D16;
+  --bg-card: #1E293B;
+  --bg-surface: #334155;
+  --border-card: #475569;
+  --border-accent: #94A3B8;
+
+  --text-primary: #F8FAFC;
+  --text-secondary: #CBD5E1;
+  --text-muted: #94A3B8;
+
+  --accent-main: #64748B;
+  --accent-hover: #475569;
+  --accent-light: #334155;
+  --accent-badge: #1E293B;
+
+  --mascot-bg: #1E293B;
+  --mascot-border: #64748B;
+  --mascot-text: #F8FAFC;
+
+  --card-shadow: 0 12px 35px -5px rgba(0, 0, 0, 0.6);
+}
+
+/* Base styling */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-primary);
+  min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.theme-lumi body {
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+}
+
+.theme-raka body {
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.theme-lumi ::-webkit-scrollbar-thumb {
+  background: #A3D4B2;
+  border-radius: 4px;
+}
+
+.theme-raka ::-webkit-scrollbar-thumb {
+  background: #273E66;
+  border-radius: 4px;
+}
+
+/* Glassmorphism Cards */
+.theme-lumi .glass-card {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-card);
+  box-shadow: var(--card-shadow);
+}
+
+.theme-raka .glass-card {
+  background: rgba(21, 34, 56, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-card);
+  box-shadow: var(--card-shadow);
+}
+
+/* Pulse animation for 1-Tap AI confidence score */
+@keyframes pulseGlow {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.02); opacity: 0.9; }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
