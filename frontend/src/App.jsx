@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
-import ThemeSwitcherBar from './components/ThemeSwitcherBar';
+import SidebarNav from './components/SidebarNav';
+import RightTrainerPanel from './components/RightTrainerPanel';
+import CompactOverviewDashboard from './components/CompactOverviewDashboard';
 import AIMascotAdvisor from './components/AIMascotAdvisor';
 import AIInputSection from './components/AIInputSection';
 import MultiWalletGrid from './components/MultiWalletGrid';
@@ -10,8 +12,7 @@ import './App.css';
 
 export default function App() {
   const [activeTheme, setActiveTheme] = useState('lumi'); // 'lumi' | 'raka'
-  const [activeTab, setActiveTab] = useState('input'); // 'input' | 'wallets' | 'analytics'
-
+  const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'input' | 'wallets' | 'history' | 'analytics'
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -26,7 +27,7 @@ export default function App() {
     'Ovo': 200000
   });
 
-  // Initial Transactions matching PRD and Reference 1
+  // Initial Transactions matching PRD
   const [transactions, setTransactions] = useState([
     { id: 1, checked: false, date: '2026-09-10', detail: 'Soto Ayam Pak Man', amount: 18000, account: 'Gopay', category: 'Makanan & Minuman' },
     { id: 2, checked: false, date: '2026-09-10', detail: 'Indomaret Belanja Struk', amount: 84500, account: 'QRIS', category: 'Kebutuhan Harian', items: ['Susu UHT 1L', 'Roti Tawar', 'Air Mineral 600ml'] },
@@ -35,14 +36,14 @@ export default function App() {
     { id: 5, checked: false, date: '2026-09-01', detail: 'Savings BNI', amount: 200000, account: 'Bank BNI', category: 'Savings' },
     { id: 6, checked: false, date: '2026-09-01', detail: 'Savings Mandiri', amount: 300000, account: 'Bank Mandiri', category: 'Savings' },
     { id: 7, checked: false, date: '2026-09-01', detail: 'Kasih ibu', amount: 500000, account: 'Tunai', category: 'Giving' },
-    { id: 8, checked: false, date: '2026-09-03', detail: 'Beli Cat Choize', amount: 20331, account: 'Bank Seabank', category: 'Giving' },
+    { id: 8, checked: false, date: '2026-09-03', detail: 'Beli Potion & Pokeball', amount: 20331, account: 'Bank Seabank', category: 'Giving' },
     { id: 9, checked: false, date: '2026-09-03', detail: 'Facial Wash + Moist', amount: 92857, account: 'Bank Seabank', category: 'Living' },
     { id: 10, checked: false, date: '2026-09-03', detail: 'Liptint', amount: 64128, account: 'Bank Seabank', category: 'Living' },
     { id: 11, checked: false, date: '2026-09-03', detail: 'Sarung tangan mandi', amount: 23595, account: 'Bank Seabank', category: 'Living' },
     { id: 12, checked: false, date: '2026-09-03', detail: 'Makan siang', amount: 42000, account: 'Tunai', category: 'Living' },
   ]);
 
-  // Set theme class on root body
+  // Apply theme class to root
   useEffect(() => {
     document.documentElement.className = `theme-${activeTheme}`;
   }, [activeTheme]);
@@ -65,37 +66,66 @@ export default function App() {
   const totalBudgetSum = Object.values(wallets).reduce((a, b) => a + b, 0) + totalExpensesSum;
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${activeTheme === 'lumi' ? 'bg-[#F3F6FA] text-slate-900' : 'bg-[#0B1120] text-white'
-      }`}>
+    <div className="w-screen h-screen overflow-hidden flex flex-row bg-[#F4F7FB] text-slate-800 antialiased font-sans">
 
-      {/* 1. TOP THEME SWITCHER & NAVIGATION BAR */}
-      <ThemeSwitcherBar
-        activeTheme={activeTheme}
-        setActiveTheme={setActiveTheme}
+      {/* 1. LEFT SIDEBAR NAVIGATION (Full height edge-to-edge) */}
+      <SidebarNav
         activeTab={activeTab}
         setActiveTab={setActiveTab}
+        activeTheme={activeTheme}
+        setActiveTheme={setActiveTheme}
       />
 
-      {/* MAIN BODY CONTAINER */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8 animate-fade-in">
+      {/* 2. CENTER MAIN DASHBOARD VIEW (Full height scrollable) */}
+      <main className="flex-1 h-full overflow-y-auto p-4 md:p-6 lg:p-7 bg-[#F8FAFC]">
 
-        {/* 2. FR-07 AI MASCOT & CONTEXTUAL ADVISOR (Lumi vs Raka) */}
-        <AIMascotAdvisor
-          activeTheme={activeTheme}
-          totalSpent={totalExpensesSum}
-          totalBudget={totalBudgetSum}
-        />
+        {/* VIEW: OVERVIEW (Replicating Compact Reference Image) */}
+        {activeTab === 'overview' && (
+          <div className="animate-fade-in">
+            <CompactOverviewDashboard
+              activeTheme={activeTheme}
+              setActiveTheme={setActiveTheme}
+              wallets={wallets}
+              transactions={transactions}
+              onOpenAddModal={() => setIsExpenseModalOpen(true)}
+              setActiveTab={setActiveTab}
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+            />
+          </div>
+        )}
 
-        {/* 3. DYNAMIC CONTENT BASED ON ACTIVE NAVIGATION TAB */}
+        {/* VIEW: AI CATAT (FR-02 Natural Language + FR-03 Vision OCR + FR-04 1-Tap) */}
         {activeTab === 'input' && (
-          <div className="space-y-8">
-            {/* AI Input Section (FR-02 Natural Language + FR-03 OCR + FR-04 1-Tap) */}
+          <div className="space-y-4 animate-fade-in">
+            <AIMascotAdvisor
+              activeTheme={activeTheme}
+              totalSpent={totalExpensesSum}
+              totalBudget={totalBudgetSum}
+            />
+
             <AIInputSection
               activeTheme={activeTheme}
               onConfirmTransaction={handleConfirmTransaction}
             />
+          </div>
+        )}
 
-            {/* Transaction History Log Table */}
+        {/* VIEW: DOMPET (FR-05 Manajemen Multi-Wallet) */}
+        {activeTab === 'wallets' && (
+          <div className="animate-fade-in">
+            <MultiWalletGrid
+              activeTheme={activeTheme}
+              wallets={wallets}
+              setWallets={setWallets}
+              transactions={transactions}
+            />
+          </div>
+        )}
+
+        {/* VIEW: HISTORI (FR-01 Riwayat Transaksi & Filter) */}
+        {activeTab === 'history' && (
+          <div className="animate-fade-in">
             <FinanceView
               transactions={transactions}
               setTransactions={setTransactions}
@@ -105,41 +135,34 @@ export default function App() {
           </div>
         )}
 
-        {activeTab === 'wallets' && (
-          <MultiWalletGrid
-            activeTheme={activeTheme}
-            wallets={wallets}
-            setWallets={setWallets}
-            transactions={transactions}
-          />
-        )}
-
+        {/* VIEW: ANALITIK (FR-06 Visualisasi Arus Kas & Analisis) */}
         {activeTab === 'analytics' && (
-          <AnalyticsCharts
-            activeTheme={activeTheme}
-            transactions={transactions}
-          />
+          <div className="animate-fade-in">
+            <AnalyticsCharts
+              activeTheme={activeTheme}
+              transactions={transactions}
+            />
+          </div>
         )}
 
       </main>
 
-      {/* Add Expense Dialog Modal */}
+      {/* 3. RIGHT TRAINER PROFILE & NOTIFICATION PANEL (Full height edge-to-edge) */}
+      <RightTrainerPanel
+        activeTheme={activeTheme}
+        setActiveTheme={setActiveTheme}
+        totalSpent={totalExpensesSum}
+        totalBudget={totalBudgetSum}
+        onOpenAddModal={() => setIsExpenseModalOpen(true)}
+      />
+
+      {/* Add Expense Modal */}
       <AddExpenseModal
         isOpen={isExpenseModalOpen}
         onClose={() => setIsExpenseModalOpen(false)}
         onAddExpense={handleConfirmTransaction}
       />
 
-      {/* Footer */}
-      <footer className={`py-6 border-t text-center text-xs font-semibold transition-colors ${activeTheme === 'lumi'
-          ? 'bg-white border-[#CBE3D3] text-[#476650]'
-          : 'bg-[#0F172A] border-slate-800 text-slate-400'
-        }`}>
-        <p>SakuKita PWA &copy; 2026 — AI Financial Tracker (Lumi & Raka Character Themes)</p>
-      </footer>
-
     </div>
   );
 }
-
-

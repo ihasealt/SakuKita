@@ -1,5 +1,5 @@
 import React from 'react';
-import { Wallet, Calendar, LayoutDashboard, Plus, Search, Sparkles, Cat } from 'lucide-react';
+import { Wallet, Calendar, LayoutDashboard, Plus, Search, Sparkles, Zap } from 'lucide-react';
 
 export default function Navbar({ activeView, setActiveView, onOpenAddExpense, onOpenAddTask, searchTerm, setSearchTerm }) {
   return (
@@ -18,7 +18,7 @@ export default function Navbar({ activeView, setActiveView, onOpenAddExpense, on
                   SakuKita
                 </span>
                 <span className="bg-emerald-100 text-emerald-800 text-xs font-semibold px-2 py-0.5 rounded-full border border-emerald-300 flex items-center gap-1">
-                  <Cat className="w-3 h-3" /> v2.0
+                  <Zap className="w-3 h-3" /> v2.0
                 </span>
               </div>
               <p className="text-[11px] text-slate-500 font-medium">Finansial & Manajer Jadwal Harian</p>

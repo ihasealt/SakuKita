@@ -1,5 +1,5 @@
 import React from 'react';
-import { Wallet, CreditCard, Smartphone, ArrowUpRight, ArrowDownRight, PlusCircle, ShieldCheck } from 'lucide-react';
+import { Wallet, CreditCard, Smartphone, PlusCircle, ShieldCheck, ArrowUpRight } from 'lucide-react';
 
 export default function MultiWalletGrid({ activeTheme, wallets, setWallets, transactions }) {
 
@@ -14,100 +14,86 @@ export default function MultiWalletGrid({ activeTheme, wallets, setWallets, tran
   const getWalletIcon = (name) => {
     switch (name) {
       case 'Tunai':
-        return <Wallet className="w-5 h-5" />;
+        return <Wallet className="w-4 h-4 text-emerald-600" />;
       case 'Bank BCA':
       case 'Bank Mandiri':
-      case 'Bank BNI':
-        return <CreditCard className="w-5 h-5" />;
+      case 'Bank Seabank':
+        return <CreditCard className="w-4 h-4 text-sky-600" />;
       case 'Gopay':
       case 'Ovo':
       case 'QRIS':
-        return <Smartphone className="w-5 h-5" />;
+        return <Smartphone className="w-4 h-4 text-indigo-600" />;
       default:
-        return <Wallet className="w-5 h-5" />;
+        return <Wallet className="w-4 h-4 text-teal-600" />;
     }
   };
 
+  const totalBalance = Object.values(wallets).reduce((a, b) => a + b, 0);
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 animate-fade-in">
       
       {/* Header & Total Balance Summary */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
-          <h2 className="text-xl sm:text-2xl font-black tracking-tight" style={{ fontFamily: 'var(--font-accent)' }}>
+          <h2 className="text-base font-black tracking-tight text-slate-800 flex items-center gap-2" style={{ fontFamily: 'var(--font-accent)' }}>
+            <Wallet className="w-5 h-5 text-teal-600" />
             FR-05 Manajemen Multi-Wallet
           </h2>
-          <p className="text-xs sm:text-sm font-semibold opacity-75 mt-0.5">
-            Integrasi saldo dompet tunai, perbankan, dan e-wallet terkoneksi secara otomatis.
+          <p className="text-xs text-slate-400 font-semibold mt-0.5">
+            Integrasi saldo kas tunai, perbankan, dan e-wallet yang terhubung otomatis
           </p>
         </div>
 
-        <div className={`px-5 py-3 rounded-2xl border flex items-center space-x-3.5 shadow-xs ${
-          activeTheme === 'lumi' 
-            ? 'bg-white border-orange-200 text-slate-900' 
-            : 'bg-[#1E293B] border-slate-700 text-white'
-        }`}>
-          <ShieldCheck className={`w-6 h-6 ${activeTheme === 'lumi' ? 'text-orange-500' : 'text-slate-300'}`} />
+        <div className="px-4 py-2 rounded-xl bg-teal-50 border border-teal-200 flex items-center space-x-2.5">
+          <ShieldCheck className="w-5 h-5 text-teal-600" />
           <div>
-            <span className="block text-xs font-black uppercase opacity-75">Total Saldo Gabungan</span>
-            <span className="text-lg font-black text-orange-600 dark:text-white">
-              {formatRupiah(Object.values(wallets).reduce((a, b) => a + b, 0))}
+            <span className="block text-[10px] font-black uppercase text-teal-700">Total Saldo Gabungan</span>
+            <span className="text-sm md:text-base font-black text-teal-900 tracking-tight">
+              {formatRupiah(totalBalance)}
             </span>
           </div>
         </div>
       </div>
 
       {/* Wallet Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
         {Object.entries(wallets).map(([walletName, balance]) => {
           const walletTxCount = transactions.filter(t => t.account === walletName || t.account.includes(walletName)).length;
 
           return (
             <div
               key={walletName}
-              className={`p-6 rounded-3xl border transition-all duration-300 shadow-sm hover:shadow-md flex flex-col justify-between space-y-4 ${
-                activeTheme === 'lumi'
-                  ? 'bg-white hover:bg-orange-50/40 border-orange-200'
-                  : 'bg-[#1E293B] hover:bg-slate-800 border-slate-700'
-              }`}
+              className="p-4 rounded-xl border border-slate-200/80 bg-white hover:border-teal-300 transition-all shadow-xs flex flex-col justify-between space-y-3"
             >
-              
-              {/* Top Row: Icon & Badge */}
+              {/* Top Row: Icon & Name */}
               <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className={`p-3.5 rounded-2xl ${
-                    activeTheme === 'lumi' 
-                      ? 'bg-orange-100 text-orange-600' 
-                      : 'bg-slate-700 text-white'
-                  }`}>
+                <div className="flex items-center space-x-2.5">
+                  <div className="p-2 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center">
                     {getWalletIcon(walletName)}
                   </div>
                   <div>
-                    <h3 className="text-base font-black">{walletName}</h3>
-                    <span className="text-xs font-bold opacity-75">{walletTxCount} transaksi</span>
+                    <h3 className="text-xs font-black text-slate-800">{walletName}</h3>
+                    <span className="text-[10px] font-semibold text-slate-400">{walletTxCount} transaksi</span>
                   </div>
                 </div>
 
-                <span className={`text-xs font-black px-3 py-1 rounded-full border ${
-                  activeTheme === 'lumi' 
-                    ? 'bg-orange-100 text-orange-900 border-orange-300' 
-                    : 'bg-slate-800 text-slate-200 border-slate-700'
-                }`}>
-                  Terhubung
+                <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
+                  Aktif
                 </span>
               </div>
 
               {/* Saldo Display */}
               <div>
-                <span className="block text-xs font-black uppercase opacity-75">Saldo Aktif</span>
-                <span className="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
+                <span className="block text-[10px] font-bold uppercase text-slate-400">Saldo Saat Ini</span>
+                <span className="text-base font-black tracking-tight text-slate-900">
                   {formatRupiah(balance)}
                 </span>
               </div>
 
               {/* Quick Actions */}
-              <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs sm:text-sm font-bold">
-                <span className="opacity-75">Mutasi Otomatis</span>
+              <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs font-bold">
+                <span className="text-[11px] text-slate-400">Auto-sync</span>
                 <button
                   onClick={() => {
                     const amount = prompt(`Tambah saldo untuk ${walletName} (Rp):`);
@@ -118,12 +104,10 @@ export default function MultiWalletGrid({ activeTheme, wallets, setWallets, tran
                       }));
                     }
                   }}
-                  className={`flex items-center gap-1.5 font-black hover:underline ${
-                    activeTheme === 'lumi' ? 'text-orange-600' : 'text-slate-300'
-                  }`}
+                  className="flex items-center gap-1 text-[11px] font-black text-teal-600 hover:text-teal-700"
                 >
-                  <PlusCircle className="w-4 h-4" />
-                  Top Up Saldo
+                  <PlusCircle className="w-3.5 h-3.5" />
+                  <span>Top Up</span>
                 </button>
               </div>
 
