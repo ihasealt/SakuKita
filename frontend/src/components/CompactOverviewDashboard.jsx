@@ -1,17 +1,28 @@
-import React, { useState } from 'react';
-import { 
-  Search, 
-  Plus, 
-  BarChart2, 
-  LineChart as LineChartIcon, 
-  Filter, 
-  Heart, 
-  Wallet, 
-  FileText, 
+import {
+  ArrowRight,
+  ArrowUpRight,
+  CreditCard,
+  Plus,
+  Search,
   Sparkles,
-  Zap, 
-  Flame
+  Wallet
 } from 'lucide-react';
+
+const formatRupiah = (amount) => new Intl.NumberFormat('id-ID', {
+  style: 'currency',
+  currency: 'IDR',
+  maximumFractionDigits: 0
+}).format(amount || 0);
+
+const formatDate = (date) => {
+  const parsedDate = new Date(`${date}T00:00:00`);
+  if (Number.isNaN(parsedDate.getTime())) return date;
+  return new Intl.DateTimeFormat('id-ID', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  }).format(parsedDate);
+};
 
 export default function CompactOverviewDashboard({
   activeTheme,
@@ -23,404 +34,314 @@ export default function CompactOverviewDashboard({
   searchTerm,
   setSearchTerm
 }) {
-  const [chartViewMode, setChartViewMode] = useState('bar');
-  const [selectedDayHover, setSelectedDayHover] = useState(null);
+  const totalBalance = Object.values(wallets).reduce((total, balance) => total + balance, 0);
+  const totalExpenses = transactions.reduce((total, transaction) => total + (transaction.amount || 0), 0);
+  const categoryTotals = transactions.reduce((totals, transaction) => {
+    const category = transaction.category || 'Lainnya';
+    totals[category] = (totals[category] || 0) + (transaction.amount || 0);
+    return totals;
+  }, {});
+  const topCategories = Object.entries(categoryTotals)
+    .sort(([, firstAmount], [, secondAmount]) => secondAmount - firstAmount)
+    .slice(0, 4);
+  const recentTransactions = [...transactions]
+    .sort((first, second) => new Date(second.date) - new Date(first.date))
+    .slice(0, 5);
+  const walletPreview = Object.entries(wallets)
+    .sort(([, firstBalance], [, secondBalance]) => secondBalance - firstBalance)
+    .slice(0, 3);
 
-  const weeklyAnalyticsData = [
-    { day: 'Mon', income: 20, expense: 12, label: 'Senin', incVal: 'Rp 200.000', expVal: 'Rp 120.000' },
-    { day: 'Tue', income: 16, expense: 8, label: 'Selasa', incVal: 'Rp 160.000', expVal: 'Rp 80.000' },
-    { day: 'Wed', income: 18, expense: 14, label: 'Rabu', incVal: 'Rp 180.000', expVal: 'Rp 140.000' },
-    { day: 'Thu', income: 15, expense: 9, label: 'Kamis', incVal: 'Rp 150.000', expVal: 'Rp 90.000' },
-    { day: 'Fri', income: 21, expense: 17, label: 'Jumat', incVal: 'Rp 210.000', expVal: 'Rp 170.000' },
-    { day: 'Sat', income: 19, expense: 11, label: 'Sabtu', incVal: 'Rp 190.000', expVal: 'Rp 110.000' },
-    { day: 'Sun', income: 22, expense: 15, label: 'Minggu', incVal: 'Rp 220.000', expVal: 'Rp 150.000' },
+  const isMoka = activeTheme === 'moka';
+  const accentColor = 'persona-accent-text';
+  const accentBackground = 'persona-accent-bg';
+  const personas = [
+    {
+      id: 'moka',
+      emoji: '🐈',
+      name: 'Moka',
+      role: 'Si Perencana',
+      description: 'Tenang dan teliti. Membantu menyusun langkah keuangan yang jelas.',
+      cardClass: 'persona-card-moka',
+    },
+    {
+      id: 'pip',
+      emoji: '🐭',
+      name: 'Pip',
+      role: 'Si Akal Lincah',
+      description: 'Ceria dan gesit. Mengajak mulai dari kebiasaan kecil yang mudah.',
+      cardClass: 'persona-card-pip',
+    },
   ];
 
   return (
-    <div className="space-y-4">
-
-      {/* 1. TOP BAR: Pill Search Input + Add Transaction Pill Button */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-        
-        {/* Search Pill Input */}
-        <div className="relative flex-1 max-w-md">
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search something..."
-            className="w-full py-2 pl-4 pr-11 rounded-xl text-xs md:text-sm font-semibold bg-white border border-slate-200/80 text-slate-800 placeholder-slate-400 outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-100 transition shadow-xs"
-          />
-          <button 
-            onClick={() => setActiveTab('history')}
-            className={`absolute right-1.5 top-1.5 bottom-1.5 px-2.5 rounded-lg flex items-center justify-center text-white transition ${
-              activeTheme === 'lumi' ? 'bg-[#38C7B4] hover:bg-[#2DAE9C]' : 'bg-[#EF4444] hover:bg-[#DC2626]'
-            }`}
-            title="Cari Data"
-          >
-            <Search className="w-3.5 h-3.5" />
-          </button>
+    <div className="mx-auto max-w-7xl space-y-7">
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="text-xs font-extrabold uppercase tracking-[0.16em] persona-accent-text">
+            Ruang keuanganmu
+          </p>
+          <h1 className="mt-1 text-3xl font-extrabold tracking-tight text-slate-900 md:text-4xl">
+            Ringkasan keuangan
+          </h1>
+          <p className="mt-2 max-w-xl text-sm leading-6 text-slate-500">
+            {isMoka
+              ? 'Pelan-pelan, satu langkah terencana bikin keuangan lebih jelas.'
+              : 'Mulai dari yang kecil—Pip bantu bikin urusan uang terasa ringan.'}
+          </p>
         </div>
-
-        {/* Action Button: + Add transaction */}
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row">
           <button
+            type="button"
+            onClick={() => setActiveTab('input')}
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-700 transition hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-400"
+          >
+            <Sparkles className="h-4 w-4" />
+            Catat dengan AI
+          </button>
+          <button
+            type="button"
             onClick={onOpenAddModal}
-            className={`flex items-center space-x-1.5 px-4 py-2 rounded-xl text-xs md:text-sm font-black transition shadow-xs border ${
-              activeTheme === 'lumi'
-                ? 'bg-white border-teal-200 text-teal-700 hover:bg-teal-50'
-                : 'bg-white border-rose-200 text-rose-700 hover:bg-rose-50'
-            }`}
+            className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-sm font-bold shadow-sm transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-500 ${accentBackground}`}
           >
-            <Plus className="w-4 h-4 stroke-[2.5]" />
-            <span>+ Add transaction</span>
-          </button>
-
-          {/* Quick theme pill */}
-          <button
-            onClick={() => setActiveTheme(activeTheme === 'lumi' ? 'raka' : 'lumi')}
-            className={`flex items-center space-x-1 px-3 py-2 rounded-xl text-xs font-black border transition shadow-xs ${
-              activeTheme === 'lumi'
-                ? 'bg-amber-50 border-amber-200 text-amber-900 hover:bg-amber-100'
-                : 'bg-rose-50 border-rose-200 text-rose-900 hover:bg-rose-100'
-            }`}
-            title="Ganti Tema Pokemon"
-          >
-            {activeTheme === 'lumi' ? (
-              <>
-                <Zap className="w-3.5 h-3.5 text-amber-500 fill-amber-400" />
-                <span>Lumi ⚡</span>
-              </>
-            ) : (
-              <>
-                <Flame className="w-3.5 h-3.5 text-rose-500 fill-rose-500" />
-                <span>Raka 🔥</span>
-              </>
-            )}
+            <Plus className="h-4 w-4" />
+            Catat pengeluaran
           </button>
         </div>
+      </header>
 
-      </div>
-
-      {/* 2. GREETING BANNER & 2 MINI SPARKLINE CARDS */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-stretch">
-
-        {/* Left Hero Greeting Card */}
-        <div className={`lg:col-span-8 p-5 md:p-6 rounded-2xl relative overflow-hidden flex flex-col justify-between text-white shadow-xs ${
-          activeTheme === 'lumi'
-            ? 'bg-gradient-to-r from-[#38C7B4] via-[#3DBFAC] to-[#45CBB8]'
-            : 'bg-gradient-to-r from-[#EF4444] via-[#F43F5E] to-[#F97316]'
-        }`}>
-          {/* Decorative floating pills */}
-          <div className="absolute top-3 right-6 pointer-events-none opacity-30 select-none flex items-center space-x-2">
-            <span className="w-8 h-4 rounded-full bg-white/40 -rotate-12 block"></span>
-            <span className="w-10 h-5 rounded-full bg-white/50 rotate-45 block"></span>
+      <section aria-labelledby="persona-heading" className="space-y-3">
+        <div className="flex flex-wrap items-end justify-between gap-2">
+          <div>
+            <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-slate-400">Dua gaya, satu tujuan</p>
+            <h2 id="persona-heading" className="mt-1 text-lg font-extrabold text-slate-900">Pilih teman mengatur uang</h2>
           </div>
-
-          <div className="relative z-10 max-w-md">
-            <h2 className="text-lg md:text-xl font-black tracking-tight" style={{ fontFamily: 'var(--font-accent)' }}>
-              Hi, Jennifer!
-            </h2>
-            <p className="text-xs md:text-sm font-semibold opacity-95 mt-1 leading-relaxed">
-              You've been doing your whole work plan for the last two months. Way to go 👍
-            </p>
-          </div>
-
-          <div className="relative z-10 mt-4 flex items-center gap-2.5">
-            <button
-              onClick={() => setActiveTab('input')}
-              className="text-xs font-black px-3.5 py-1.5 rounded-lg bg-white text-slate-800 hover:bg-slate-50 transition shadow-xs flex items-center gap-1"
-            >
-              <Sparkles className="w-3 h-3 text-amber-500" />
-              <span>AI Quick Input</span>
-            </button>
-            <span className="text-[10px] font-bold opacity-90">
-              {activeTheme === 'lumi' ? '⚡ Lumi Pokemon Companion' : '🔥 Raka Fin-Officer'}
-            </span>
-          </div>
+          <span className="text-xs font-medium text-slate-500">Bisa diganti kapan saja</span>
         </div>
-
-        {/* 2 Mini Stat / Sparkline Cards */}
-        <div className="lg:col-span-4 grid grid-cols-2 gap-3">
-          
-          {/* Mini Card 1: +11 reviews */}
-          <div className="p-3.5 rounded-2xl border border-slate-200/80 bg-white shadow-xs flex flex-col justify-between">
-            <div>
-              <span className={`text-base font-black tracking-tight ${
-                activeTheme === 'lumi' ? 'text-teal-600' : 'text-rose-600'
-              }`}>
-                +11
-              </span>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                reviews
-              </p>
-            </div>
-
-            <div className="mt-2">
-              <svg viewBox="0 0 100 35" className="w-full h-7 overflow-visible">
-                <path
-                  d="M 0,28 C 25,28 35,10 50,18 C 65,26 75,5 100,8"
-                  fill="none"
-                  stroke="#FF7272"
-                  strokeWidth="2.8"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </div>
-          </div>
-
-          {/* Mini Card 2: +78 patients */}
-          <div className="p-3.5 rounded-2xl border border-slate-200/80 bg-white shadow-xs flex flex-col justify-between">
-            <div>
-              <span className={`text-base font-black tracking-tight ${
-                activeTheme === 'lumi' ? 'text-teal-600' : 'text-rose-600'
-              }`}>
-                +78
-              </span>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                patients
-              </p>
-            </div>
-
-            <div className="mt-2">
-              <svg viewBox="0 0 100 35" className="w-full h-7 overflow-visible">
-                <path
-                  d="M 0,25 C 20,20 40,30 60,12 C 75,5 85,20 100,6"
-                  fill="none"
-                  stroke="#38C7B4"
-                  strokeWidth="2.8"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-
-      {/* 3. PATIENT ANALYTICS / 3 HORIZONTAL COLORED METRIC CARDS */}
-      <div>
-        <div className="flex items-center justify-between mb-2 px-0.5">
-          <h3 className="text-[11px] font-black tracking-tight uppercase text-slate-400">
-            Patient analytics
-          </h3>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          
-          {/* Card 1: Coral / Red-Pink */}
-          <div 
-            onClick={() => setActiveTab('history')}
-            className="p-3.5 rounded-xl bg-[#FF7D7D] text-white flex items-center space-x-3 cursor-pointer shadow-xs transition hover:opacity-95"
-          >
-            <div className="w-9 h-9 rounded-lg bg-white/25 flex items-center justify-center flex-shrink-0 text-white">
-              <Heart className="w-4 h-4 fill-current" />
-            </div>
-            <div>
-              <p className="text-[11px] font-semibold opacity-90 leading-tight">Appointments today</p>
-              <h4 className="text-sm md:text-base font-black tracking-tight mt-0.5">18 persons</h4>
-            </div>
-          </div>
-
-          {/* Card 2: Warm Amber / Yellow-Orange */}
-          <div 
-            onClick={() => setActiveTab('wallets')}
-            className="p-3.5 rounded-xl bg-[#FFB74D] text-white flex items-center space-x-3 cursor-pointer shadow-xs transition hover:opacity-95"
-          >
-            <div className="w-9 h-9 rounded-lg bg-white/25 flex items-center justify-center flex-shrink-0 text-white">
-              <Wallet className="w-4 h-4" />
-            </div>
-            <div>
-              <p className="text-[11px] font-semibold opacity-90 leading-tight">New patients</p>
-              <h4 className="text-sm md:text-base font-black tracking-tight mt-0.5">125 for the month</h4>
-            </div>
-          </div>
-
-          {/* Card 3: Soft Teal / Cyan */}
-          <div 
-            onClick={() => setActiveTab('wallets')}
-            className="p-3.5 rounded-xl bg-[#5EC2D7] text-white flex items-center space-x-3 cursor-pointer shadow-xs transition hover:opacity-95"
-          >
-            <div className="w-9 h-9 rounded-lg bg-white/25 flex items-center justify-center flex-shrink-0 text-white">
-              <FileText className="w-4 h-4" />
-            </div>
-            <div>
-              <p className="text-[11px] font-semibold opacity-90 leading-tight">Total patients</p>
-              <h4 className="text-sm md:text-base font-black tracking-tight mt-0.5">2000+</h4>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      {/* 4. VISUAL ANALYTICS: Dual Bar Chart & Radial Progress */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-stretch">
-        
-        {/* Left Column: This week's analytics overview */}
-        <div className="lg:col-span-8 p-5 rounded-2xl border border-slate-200/80 bg-white shadow-xs flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-3">
-            <h4 className="text-xs md:text-sm font-black tracking-tight text-slate-800">
-              This week's analytics overview
-            </h4>
-
-            <div className="flex items-center space-x-1 p-0.5 rounded-lg bg-slate-100">
+        <div className="grid gap-3 md:grid-cols-2">
+          {personas.map((persona) => {
+            const isSelected = activeTheme === persona.id;
+            return (
               <button
-                onClick={() => setChartViewMode('bar')}
-                className={`p-1 rounded-md transition ${
-                  chartViewMode === 'bar' ? 'bg-white text-slate-800 shadow-xs' : 'text-slate-400 hover:text-slate-700'
+                key={persona.id}
+                type="button"
+                onClick={() => setActiveTheme(persona.id)}
+                aria-pressed={isSelected}
+                className={`${persona.cardClass} flex min-h-32 items-center gap-4 rounded-2xl border-2 p-4 text-left transition hover:-translate-y-0.5 hover:shadow-md sm:p-5 ${
+                  isSelected ? 'persona-selected-card shadow-sm' : ''
                 }`}
-                title="Bar View"
               >
-                <BarChart2 className="w-3.5 h-3.5" />
-              </button>
-              <button
-                onClick={() => setChartViewMode('line')}
-                className={`p-1 rounded-md transition ${
-                  chartViewMode === 'line' ? 'bg-white text-slate-800 shadow-xs' : 'text-slate-400 hover:text-slate-700'
-                }`}
-                title="Line View"
-              >
-                <LineChartIcon className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          </div>
-
-          {/* Dual Bar Chart Area */}
-          <div className="h-48 w-full flex items-end justify-between pt-4 pb-1 px-1 relative">
-            {/* Horizontal Grid lines */}
-            <div className="absolute inset-x-0 top-0 bottom-5 flex flex-col justify-between pointer-events-none opacity-20">
-              <div className="border-b border-dashed border-slate-400 w-full flex justify-between text-[9px] text-slate-400 -mt-2"><span>25</span></div>
-              <div className="border-b border-dashed border-slate-400 w-full flex justify-between text-[9px] text-slate-400 -mt-2"><span>20</span></div>
-              <div className="border-b border-dashed border-slate-400 w-full flex justify-between text-[9px] text-slate-400 -mt-2"><span>15</span></div>
-              <div className="border-b border-dashed border-slate-400 w-full flex justify-between text-[9px] text-slate-400 -mt-2"><span>10</span></div>
-              <div className="border-b border-dashed border-slate-400 w-full flex justify-between text-[9px] text-slate-400 -mt-2"><span>5</span></div>
-            </div>
-
-            {/* 7 Day Columns */}
-            {weeklyAnalyticsData.map((item, idx) => {
-              const isHovered = selectedDayHover === idx;
-              return (
-                <div 
-                  key={item.day}
-                  onMouseEnter={() => setSelectedDayHover(idx)}
-                  onMouseLeave={() => setSelectedDayHover(null)}
-                  className="flex flex-col items-center flex-1 z-10 group cursor-pointer"
-                >
-                  {isHovered && (
-                    <div className="absolute -top-7 px-2 py-0.5 rounded bg-slate-900 text-white text-[9px] font-bold shadow-md pointer-events-none whitespace-nowrap">
-                      {item.label}: Masuk {item.incVal} | Keluar {item.expVal}
-                    </div>
-                  )}
-
-                  <div className="flex items-end justify-center space-x-1 h-36 w-full">
-                    {/* Primary Bar */}
-                    <div 
-                      style={{ height: `${(item.income / 25) * 100}%` }}
-                      className={`w-2 rounded-full transition-all ${
-                        activeTheme === 'lumi' ? 'bg-[#38C7B4]' : 'bg-[#EF4444]'
-                      }`}
-                    ></div>
-
-                    {/* Secondary Bar */}
-                    <div 
-                      style={{ height: `${(item.expense / 25) * 100}%` }}
-                      className="w-2 rounded-full bg-[#FF7D7D] transition-all"
-                    ></div>
-                  </div>
-
-                  <span className="text-[10px] font-semibold text-slate-400 mt-1.5">
-                    {item.day}
+                <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white/75 text-4xl shadow-sm" aria-hidden="true">
+                  {persona.emoji}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="flex flex-wrap items-center gap-2">
+                    <span className="text-lg font-extrabold text-slate-900">{persona.name}</span>
+                    <span className="rounded-full bg-white/70 px-2.5 py-1 text-[11px] font-bold text-slate-600">{persona.role}</span>
                   </span>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Bar Legend */}
-          <div className="flex items-center justify-center space-x-5 pt-2 border-t border-slate-100 text-[10px] font-bold">
-            <div className="flex items-center space-x-1.5">
-              <span className={`w-2 h-2 rounded-full ${activeTheme === 'lumi' ? 'bg-[#38C7B4]' : 'bg-[#EF4444]'}`}></span>
-              <span className="text-slate-500">Pemasukan / Anggaran</span>
-            </div>
-            <div className="flex items-center space-x-1.5">
-              <span className="w-2 h-2 rounded-full bg-[#FF7D7D]"></span>
-              <span className="text-slate-500">Pengeluaran Riil</span>
-            </div>
-          </div>
+                  <span className="mt-1 block max-w-md text-sm leading-5 text-slate-600">{persona.description}</span>
+                </span>
+                <span className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-extrabold ${
+                  isSelected ? 'persona-accent-bg' : 'bg-white/70 text-slate-500'
+                }`}>
+                  {isSelected ? 'Dipilih' : 'Pilih'}
+                </span>
+              </button>
+            );
+          })}
         </div>
+      </section>
 
-        {/* Right Column: Progress */}
-        <div className="lg:col-span-4 p-5 rounded-2xl border border-slate-200/80 bg-white shadow-xs flex flex-col justify-between">
-          <div className="flex items-center justify-between mb-1">
-            <h4 className="text-xs md:text-sm font-black tracking-tight text-slate-800">
-              Progress
-            </h4>
-            <button 
-              onClick={() => setActiveTab('analytics')}
-              className="p-1 rounded-md bg-slate-100 text-slate-400 hover:text-slate-700"
-              title="Lihat Detail"
+      <section className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
+        <div className="persona-hero relative overflow-hidden rounded-2xl p-6 shadow-sm md:p-8">
+          <div className="persona-hero-decoration absolute -right-8 -top-12 h-48 w-48 rounded-full border-[28px] border-white/10" aria-hidden="true" />
+          <div className="persona-hero-mascots pointer-events-none absolute bottom-2 right-5 hidden items-end sm:flex" aria-hidden="true">
+            <span className="text-7xl drop-shadow-md md:text-8xl">{isMoka ? '🐈' : '🐭'}</span>
+            <span className="-ml-5 mb-1 text-5xl drop-shadow-md md:text-6xl">{isMoka ? '🐭' : '🐈'}</span>
+          </div>
+          <div className="relative">
+            <p className="persona-hero-muted text-sm font-semibold">Total saldo tersedia</p>
+            <p className="mt-2 break-words text-3xl font-extrabold tracking-tight md:text-4xl">
+              {formatRupiah(totalBalance)}
+            </p>
+            <p className="persona-hero-muted mt-2 max-w-md text-sm leading-6">
+              Gabungan saldo dari {Object.keys(wallets).length} dompet yang kamu kelola.
+            </p>
+            <button
+              type="button"
+              onClick={() => setActiveTab('wallets')}
+              className="persona-hero-button mt-5 inline-flex min-h-10 items-center gap-2 rounded-lg bg-white/15 px-3 text-sm font-bold transition hover:bg-white/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             >
-              <Filter className="w-3 h-3" />
+              Lihat semua dompet <ArrowRight className="h-4 w-4" />
             </button>
           </div>
-
-          {/* Concentric Rings */}
-          <div className="flex items-center justify-center py-2">
-            <div className="relative w-36 h-36 flex items-center justify-center">
-              <svg viewBox="0 0 160 160" className="w-full h-full -rotate-90">
-                <circle cx="80" cy="80" r="66" fill="none" stroke="#E2F3F0" strokeWidth="8" />
-                <circle cx="80" cy="80" r="66" fill="none" stroke="#38C7B4" strokeWidth="8" strokeDasharray="414" strokeDashoffset="120" strokeLinecap="round" />
-
-                <circle cx="80" cy="80" r="50" fill="none" stroke="#FFE8E8" strokeWidth="8" />
-                <circle cx="80" cy="80" r="50" fill="none" stroke="#FF7D7D" strokeWidth="8" strokeDasharray="314" strokeDashoffset="140" strokeLinecap="round" />
-
-                <circle cx="80" cy="80" r="34" fill="none" stroke="#FEF3C7" strokeWidth="8" />
-                <circle cx="80" cy="80" r="34" fill="none" stroke="#FFB74D" strokeWidth="8" strokeDasharray="213" strokeDashoffset="60" strokeLinecap="round" />
-              </svg>
-
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                <span className="text-xs font-black tracking-tight text-slate-800" style={{ fontFamily: 'var(--font-accent)' }}>
-                  82%
-                </span>
-                <span className="text-[9px] font-bold text-slate-400 uppercase">
-                  Target
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Legend Items */}
-          <div className="space-y-1.5 pt-2 border-t border-slate-100 text-[11px] font-semibold">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-1.5">
-                <span className="w-2 h-2 rounded-full bg-[#38C7B4]"></span>
-                <span className="text-slate-500">Health (Kebutuhan)</span>
-              </div>
-              <span className="font-black text-slate-800">65%</span>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-1.5">
-                <span className="w-2 h-2 rounded-full bg-[#FF7D7D]"></span>
-                <span className="text-slate-500">Continue treatment (Jajan)</span>
-              </div>
-              <span className="font-black text-slate-800">20%</span>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-1.5">
-                <span className="w-2 h-2 rounded-full bg-[#FFB74D]"></span>
-                <span className="text-slate-500">Neutral (Tabungan)</span>
-              </div>
-              <span className="font-black text-slate-800">15%</span>
-            </div>
-          </div>
-
         </div>
 
-      </div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+          <article className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-rose-50 text-rose-600">
+              <ArrowUpRight className="h-5 w-5" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-slate-500">Total pengeluaran tercatat</p>
+              <p className="mt-1 truncate text-xl font-extrabold text-slate-900">{formatRupiah(totalExpenses)}</p>
+              <p className="mt-0.5 text-xs text-slate-500">{transactions.length} transaksi</p>
+            </div>
+          </article>
+          <article className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl persona-accent-soft">
+              <CreditCard className="h-5 w-5" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-slate-500">Dompet aktif</p>
+              <p className="mt-1 text-xl font-extrabold text-slate-900">{Object.keys(wallets).length} dompet</p>
+              <p className="mt-0.5 text-xs text-slate-500">Tunai, bank, dan e-wallet</p>
+            </div>
+          </article>
+        </div>
+      </section>
 
+      <section className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
+        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <div className="flex flex-col gap-3 border-b border-slate-100 p-5 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="font-bold text-slate-900">Transaksi terbaru</h2>
+              <p className="mt-1 text-sm text-slate-500">Pantau catatan pengeluaranmu dengan cepat.</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <label className="relative min-w-0 flex-1 sm:w-52 sm:flex-none">
+                <span className="sr-only">Cari transaksi</span>
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="search"
+                  value={searchTerm}
+                  onChange={(event) => setSearchTerm(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter') setActiveTab('history');
+                  }}
+                  placeholder="Cari transaksi"
+                  className="h-10 w-full rounded-lg border border-slate-200 bg-slate-50 pl-9 pr-3 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-slate-400 focus:bg-white focus:ring-2 focus:ring-slate-100"
+                />
+              </label>
+              <button
+                type="button"
+                onClick={() => setActiveTab('history')}
+                className={`inline-flex h-10 shrink-0 items-center gap-1 rounded-lg px-3 text-sm font-bold transition hover:bg-slate-50 ${accentColor}`}
+              >
+                Semua <ArrowRight className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+
+          {recentTransactions.length > 0 ? (
+            <ul className="divide-y divide-slate-100">
+              {recentTransactions.map((transaction) => (
+                <li key={transaction.id} className="flex items-center gap-3 px-5 py-4">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-600">
+                    <Wallet className="h-4 w-4" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-bold text-slate-800">{transaction.detail}</p>
+                    <p className="mt-1 truncate text-xs text-slate-500">
+                      {formatDate(transaction.date)} · {transaction.category} · {transaction.account}
+                    </p>
+                  </div>
+                  <p className="shrink-0 text-right text-sm font-extrabold text-slate-900">
+                    -{formatRupiah(transaction.amount)}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="px-5 py-10 text-center">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-500">
+                <Wallet className="h-5 w-5" />
+              </div>
+              <p className="mt-3 font-bold text-slate-800">Belum ada transaksi</p>
+              <p className="mt-1 text-sm text-slate-500">Catat pengeluaran pertamamu untuk mulai melihat ringkasan.</p>
+              <button
+                type="button"
+                onClick={onOpenAddModal}
+                className={`mt-4 inline-flex min-h-10 items-center gap-2 rounded-lg px-4 text-sm font-bold transition ${accentBackground}`}
+              >
+                <Plus className="h-4 w-4" /> Catat pengeluaran
+              </button>
+            </div>
+          )}
+        </div>
+
+        <div className="space-y-4">
+          <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 className="font-bold text-slate-900">Pengeluaran per kategori</h2>
+                <p className="mt-1 text-sm text-slate-500">Kategori dengan pengeluaran terbesar.</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setActiveTab('analytics')}
+                aria-label="Lihat analitik"
+                className="rounded-lg p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900"
+              >
+                <ArrowRight className="h-4 w-4" />
+              </button>
+            </div>
+            {topCategories.length > 0 ? (
+              <ul className="mt-5 space-y-4">
+                {topCategories.map(([category, amount], index) => {
+                  const percentage = totalExpenses > 0 ? Math.round((amount / totalExpenses) * 100) : 0;
+                  return (
+                    <li key={category}>
+                      <div className="mb-2 flex items-center justify-between gap-3 text-sm">
+                        <span className="truncate font-semibold text-slate-700">{category}</span>
+                        <span className="shrink-0 font-bold text-slate-900">{formatRupiah(amount)}</span>
+                      </div>
+                      <div className="h-2 overflow-hidden rounded-full bg-slate-100">
+                        <div
+                          className={`h-full rounded-full ${index === 0 ? 'persona-accent-bg' : 'bg-slate-400'}`}
+                          style={{ width: `${percentage}%` }}
+                        />
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            ) : (
+              <p className="mt-5 rounded-xl bg-slate-50 p-4 text-sm text-slate-500">
+                Ringkasan kategori akan muncul setelah kamu mencatat transaksi.
+              </p>
+            )}
+          </section>
+
+          <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="font-bold text-slate-900">Saldo dompet</h2>
+                <p className="mt-1 text-sm text-slate-500">Saldo terbesar saat ini.</p>
+              </div>
+              <Wallet className="h-5 w-5 persona-accent-text" />
+            </div>
+            {walletPreview.length > 0 ? (
+              <ul className="mt-3 divide-y divide-slate-100">
+                {walletPreview.map(([name, balance]) => (
+                  <li key={name} className="flex items-center justify-between gap-3 py-3 text-sm">
+                    <span className="truncate font-semibold text-slate-700">{name}</span>
+                    <span className="shrink-0 font-bold text-slate-900">{formatRupiah(balance)}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="mt-4 text-sm text-slate-500">Belum ada dompet.</p>
+            )}
+            <button
+              type="button"
+              onClick={() => setActiveTab('wallets')}
+              className={`mt-1 inline-flex min-h-9 items-center gap-1 text-sm font-bold ${accentColor}`}
+            >
+              Kelola dompet <ArrowRight className="h-4 w-4" />
+            </button>
+          </section>
+        </div>
+      </section>
     </div>
   );
 }

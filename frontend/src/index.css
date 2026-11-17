@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Quicksand:wght@600;700&display=swap');
 @import "tailwindcss";
 
-/* SakuKita AI Financial Tracker - Unified Clean Light Pokemon Themes (Lumi & Raka) */
+/* SakuKita personal finance themes: Moka (calm) and Pip (playful). */
 
 :root {
   color-scheme: light;
@@ -10,50 +10,47 @@
   --font-cute: 'Quicksand', cursive, sans-serif;
 }
 
-/* ========================================================================= */
-/* THEME 1: LUMI (Pokemon Electric & Fairy - Soft Teal, Amber & Coral) */
-/* ========================================================================= */
-.theme-lumi {
-  --bg-page: #F4F7FB;
-  --bg-surface: #FFFFFF;
-  --bg-card: #FFFFFF;
-  --border-card: #E2E8F0;
-  --border-subtle: #F1F5F9;
-
-  --text-main: #0F172A;
-  --text-sub: #475569;
-  --text-muted: #94A3B8;
-
-  --accent-primary: #38C7B4;
-  --accent-primary-hover: #2DAE9C;
-  --accent-secondary: #FF7D7D;
-  --accent-amber: #F59E0B;
-  --accent-pill: #E6F8F5;
-
-  --card-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+:root {
+  --page-bg: #f5f2eb;
+  --surface-bg: #fffefa;
+  --surface-border: #e8e1d5;
+  --text-main: #29323b;
+  --text-sub: #68737d;
+  --text-muted: #929ba3;
+  --theme-accent: #526e89;
+  --theme-accent-hover: #3e5a75;
+  --theme-accent-soft: #e6edf3;
+  --theme-accent-contrast: #ffffff;
+  --theme-accent-ink: #344b61;
+  color-scheme: light;
 }
 
-/* ========================================================================= */
-/* THEME 2: RAKA (Pokemon Fire & Steel Champion - Crisp White, Flame Red & Cyan) */
-/* ========================================================================= */
-.theme-raka {
-  --bg-page: #F8F9FA;
-  --bg-surface: #FFFFFF;
-  --bg-card: #FFFFFF;
-  --border-card: #E2E8F0;
-  --border-subtle: #F1F5F9;
+.theme-moka {
+  --page-bg: #f1f3f5;
+  --surface-bg: #ffffff;
+  --surface-border: #dce2e7;
+  --text-main: #29323b;
+  --text-sub: #68737d;
+  --text-muted: #929ba3;
+  --theme-accent: #526e89;
+  --theme-accent-hover: #3e5a75;
+  --theme-accent-soft: #e6edf3;
+  --theme-accent-contrast: #ffffff;
+  --theme-accent-ink: #344b61;
+}
 
-  --text-main: #0F172A;
-  --text-sub: #475569;
-  --text-muted: #94A3B8;
-
-  --accent-primary: #EF4444;
-  --accent-primary-hover: #DC2626;
-  --accent-secondary: #0EA5E9;
-  --accent-amber: #F97316;
-  --accent-pill: #FEE2E2;
-
-  --card-shadow: 0 4px 20px -2px rgba(239, 68, 68, 0.06);
+.theme-pip {
+  --page-bg: #fff8e9;
+  --surface-bg: #fffefa;
+  --surface-border: #f0e2c1;
+  --text-main: #3d3426;
+  --text-sub: #776b56;
+  --text-muted: #988b73;
+  --theme-accent: #f0c44e;
+  --theme-accent-hover: #dfad2d;
+  --theme-accent-soft: #fff1c8;
+  --theme-accent-contrast: #3d3426;
+  --theme-accent-ink: #75530d;
 }
 
 * {
@@ -67,10 +64,94 @@ html, body {
   height: 100%;
   width: 100%;
   overflow: hidden;
-  background-color: var(--bg-page);
+  background-color: var(--page-bg);
   color: var(--text-main);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+}
+
+.persona-accent-bg {
+  background-color: var(--theme-accent);
+  color: var(--theme-accent-contrast);
+}
+
+.persona-accent-bg:hover {
+  background-color: var(--theme-accent-hover);
+}
+
+.persona-accent-text {
+  color: var(--theme-accent-ink);
+}
+
+.persona-accent-border {
+  border-color: var(--theme-accent);
+}
+
+.persona-accent-soft {
+  background-color: var(--theme-accent-soft);
+  color: var(--theme-accent-ink);
+}
+
+.persona-focus:focus {
+  border-color: var(--theme-accent);
+  box-shadow: 0 0 0 2px var(--theme-accent-soft);
+}
+
+.persona-accent-hover:hover {
+  background-color: var(--theme-accent-soft);
+  border-color: var(--theme-accent);
+  color: var(--theme-accent-ink);
+}
+
+.persona-card-moka {
+  border-color: #d3dde6;
+  background-color: #eaf0f5;
+}
+
+.persona-card-pip {
+  border-color: #eddda9;
+  background-color: #fff1c8;
+}
+
+.theme-moka .persona-selected-card {
+  border-color: #526e89;
+  box-shadow: 0 0 0 2px rgba(82, 110, 137, 0.18);
+}
+
+.theme-pip .persona-selected-card {
+  border-color: #d6a927;
+  box-shadow: 0 0 0 2px rgba(214, 169, 39, 0.24);
+}
+
+.persona-hero {
+  background: linear-gradient(125deg, #415d78 0%, #70869a 100%);
+  color: #ffffff;
+}
+
+.persona-hero-muted {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.theme-pip .persona-hero {
+  background: linear-gradient(125deg, #f1c84f 0%, #f7d979 100%);
+  color: #3d3426;
+}
+
+.theme-pip .persona-hero-decoration {
+  border-color: rgba(117, 83, 13, 0.12);
+}
+
+.theme-pip .persona-hero .persona-hero-muted {
+  color: #665323;
+}
+
+.theme-pip .persona-hero .persona-hero-button {
+  background-color: rgba(255, 255, 255, 0.65);
+  color: #3d3426;
+}
+
+.theme-pip .persona-hero .persona-hero-button:hover {
+  background-color: #ffffff;
 }
 
 /* Custom Scrollbar */

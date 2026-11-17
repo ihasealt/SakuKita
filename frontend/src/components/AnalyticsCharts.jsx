@@ -1,4 +1,3 @@
-import React from 'react';
 import { PieChart, BarChart3 } from 'lucide-react';
 
 export default function AnalyticsCharts({ activeTheme, transactions }) {
@@ -11,7 +10,9 @@ export default function AnalyticsCharts({ activeTheme, transactions }) {
 
   const totalExpenseSum = Object.values(categoryTotals).reduce((a, b) => a + b, 0) || 1;
   const categories = Object.keys(categoryTotals);
-  const themeColors = ['#38C7B4', '#FF7D7D', '#FFB74D', '#818CF8', '#A78BFA'];
+  const themeColors = activeTheme === 'moka'
+    ? ['#526E89', '#8DA0B3', '#D6B05B', '#9C8CB6', '#79A69C']
+    : ['#D6A927', '#E98754', '#7F9CBB', '#A99172', '#9C8CB6'];
 
   const formatRupiah = (num) => {
     return new Intl.NumberFormat('id-ID', {
@@ -36,7 +37,7 @@ export default function AnalyticsCharts({ activeTheme, transactions }) {
       <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between">
         <div>
           <h2 className="text-base font-black tracking-tight text-slate-800 flex items-center gap-2" style={{ fontFamily: 'var(--font-accent)' }}>
-            <BarChart3 className="w-5 h-5 text-teal-600" />
+            <BarChart3 className="w-5 h-5 persona-accent-text" />
             FR-06 Dasbor Analitik & Visualisasi Arus Kas
           </h2>
           <p className="text-xs text-slate-400 font-semibold mt-0.5">
@@ -51,7 +52,7 @@ export default function AnalyticsCharts({ activeTheme, transactions }) {
         <div className="lg:col-span-6 p-5 rounded-2xl border border-slate-200/80 bg-white shadow-xs space-y-4">
           <div className="flex items-center justify-between border-b pb-3 border-slate-100">
             <div className="flex items-center space-x-2">
-              <PieChart className="w-4 h-4 text-teal-600" />
+              <PieChart className="w-4 h-4 persona-accent-text" />
               <h3 className="text-xs md:text-sm font-black text-slate-800">Alokasi per Kategori</h3>
             </div>
             <span className="text-[11px] font-bold text-slate-400">Total: {formatRupiah(totalExpenseSum)}</span>
@@ -102,7 +103,7 @@ export default function AnalyticsCharts({ activeTheme, transactions }) {
         <div className="lg:col-span-6 p-5 rounded-2xl border border-slate-200/80 bg-white shadow-xs space-y-4">
           <div className="flex items-center justify-between border-b pb-3 border-slate-100">
             <div className="flex items-center space-x-2">
-              <BarChart3 className="w-4 h-4 text-teal-600" />
+              <BarChart3 className="w-4 h-4 persona-accent-text" />
               <h3 className="text-xs md:text-sm font-black text-slate-800">Tren Pemasukan vs Pengeluaran</h3>
             </div>
             <span className="text-[11px] font-bold text-slate-400">5 Bulan Terakhir</span>
@@ -115,14 +116,14 @@ export default function AnalyticsCharts({ activeTheme, transactions }) {
               return (
                 <div key={m.month} className="flex-1 flex flex-col items-center">
                   <div className="flex items-end justify-center space-x-1 h-32 w-full">
-                    <div 
-                      style={{ height: `${incH}%` }} 
-                      className="w-2.5 rounded-t bg-[#38C7B4]"
+                    <div
+                      className="w-2.5 rounded-t"
+                      style={{ height: `${incH}%`, backgroundColor: themeColors[0] }}
                       title={`Pemasukan: ${formatRupiah(m.income)}`}
                     ></div>
                     <div 
                       style={{ height: `${expH}%` }} 
-                      className="w-2.5 rounded-t bg-[#FF7D7D]"
+                      className="w-2.5 rounded-t bg-rose-400"
                       title={`Pengeluaran: ${formatRupiah(m.expense)}`}
                     ></div>
                   </div>
@@ -134,7 +135,7 @@ export default function AnalyticsCharts({ activeTheme, transactions }) {
 
           <div className="flex items-center justify-center space-x-4 pt-1 border-t border-slate-100 text-[10px] font-bold">
             <div className="flex items-center space-x-1.5">
-              <span className="w-2 h-2 rounded-full bg-[#38C7B4]"></span>
+              <span className="h-2 w-2 rounded-full" style={{ backgroundColor: themeColors[0] }}></span>
               <span className="text-slate-500">Pemasukan</span>
             </div>
             <div className="flex items-center space-x-1.5">

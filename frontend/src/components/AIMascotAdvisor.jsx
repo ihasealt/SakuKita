@@ -1,124 +1,71 @@
-import React, { useState } from 'react';
-import { Sparkles, Zap, Flame } from 'lucide-react';
-import lumiMascot from '../assets/lumi_pokemon.jpg';
-import rakaMascot from '../assets/raka_pokemon.jpg';
+import { useState } from 'react';
+import { ArrowRight, Sparkles } from 'lucide-react';
 
-export default function AIMascotAdvisor({ activeTheme, totalSpent, totalBudget }) {
+const formatRupiah = (amount) => new Intl.NumberFormat('id-ID', {
+  style: 'currency',
+  currency: 'IDR',
+  maximumFractionDigits: 0
+}).format(amount || 0);
+
+export default function AIMascotAdvisor({ activeTheme, totalSpent }) {
   const [adviceIndex, setAdviceIndex] = useState(0);
+  const isMoka = activeTheme === 'moka';
+  const persona = isMoka
+    ? {
+      name: 'Moka',
+      role: 'Si Perencana',
+      emoji: '🐈',
+      description: 'Tenang, teliti, dan suka langkah yang jelas.',
+      advice: [
+        `Tercatat ${formatRupiah(totalSpent)} sejauh ini. Coba lihat kategori terbesar dulu, lalu tentukan satu hal kecil yang ingin kamu atur.`,
+        'Biar tidak menebak-nebak, catat transaksi segera setelah membayar. Nanti lebih mudah mengecek pola pengeluaran.',
+        'Rencana sederhana lebih mudah dijalankan: pilih satu prioritas keuangan untuk minggu ini.',
+      ],
+    }
+    : {
+      name: 'Pip',
+      role: 'Si Akal Lincah',
+      emoji: '🐭',
+      description: 'Ceria, gesit, dan jago memulai dari hal kecil.',
+      advice: [
+        `Sudah ada ${formatRupiah(totalSpent)} yang tercatat! Satu langkah cepat: masukkan transaksi terakhir, lalu lihat apa yang paling sering muncul.`,
+        'Tidak perlu langsung merapikan semuanya. Catat satu pengeluaran hari ini—sedikit-sedikit jadi kebiasaan.',
+        'Trik Pip: pakai kolom pencarian untuk menemukan transaksi lama tanpa perlu menggulir panjang.',
+      ],
+    };
 
-  const budgetUsagePercent = Math.min(100, Math.round((totalSpent / totalBudget) * 100));
-
-  // Lumi Pokemon personality quotes
-  const lumiAdviceList = [
-    "Pika-pika! 🌸 Lumi udah bantu rapiin catatan Pokédollar kamu ya! Jangan lupa istirahat & tetap hemat yaa, Lumi bangga sama kamu 💖",
-    `Yuhuu~ Alokasi anggaran kamu baru terpakai ${budgetUsagePercent}%. Masih aman kok Trainer, Lumi selalu ada di samping kamu 🍀`,
-    "Trik hemat dari Lumi: Setiap kali abis beli potion atau jajan, langsung catat ke SakuKita yaa biar keuangan rapi ✨",
-    "Pencapaian hebat! Kamu berhasil menyisihkan Pokédollar ke Tabungan BNI & Mandiri, Lumi seneng banget! 💖"
-  ];
-
-  // Raka Pokemon personality quotes
-  const rakaAdviceList = [
-    `HEI TRAINER! Kenapa pengeluaranmu berantakan begini?! 🔥 Rasio anggaranmu sudah menyentuh ${budgetUsagePercent}%! Pokédollar-mu bisa ludes kalau kamu tidak disiplin!`,
-    "PERINGATAN KERAS! Transaksi dompet Gopay sudah melampaui batas wajar! Hentikan jajan impulsif sekarang atau saya bekukan kasmu!",
-    "Jangan banyak alasan! Gunakan AI parser atau Vision OCR ini sekarang juga! Saya tidak toleransi kelalaian dalam catatan keuangan!",
-    "Target Finansial: Batasi pengeluaran harian di bawah limit! Disiplin adalah kunci menjadi Pokemon Champion! ⚡"
-  ];
-
-  const currentAdvice = activeTheme === 'lumi'
-    ? lumiAdviceList[adviceIndex % lumiAdviceList.length]
-    : rakaAdviceList[adviceIndex % rakaAdviceList.length];
+  const currentAdvice = persona.advice[adviceIndex % persona.advice.length];
 
   return (
-    <div className={`rounded-2xl p-4 sm:p-5 transition-all border shadow-xs bg-white ${
-      activeTheme === 'lumi' ? 'border-teal-200' : 'border-rose-200'
-    }`}>
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-
-        {/* Mascot Avatar & Name */}
-        <div className="flex items-center space-x-3">
-          <div className="relative flex-shrink-0">
-            <div className={`w-12 h-12 rounded-xl overflow-hidden border-2 shadow-xs ${
-              activeTheme === 'lumi' ? 'border-amber-300' : 'border-rose-400'
-            }`}>
-              <img 
-                src={activeTheme === 'lumi' ? lumiMascot : rakaMascot} 
-                alt="Pokemon Mascot" 
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-white flex items-center justify-center text-[10px] font-black ${
-              activeTheme === 'lumi' ? 'bg-amber-400 text-slate-900' : 'bg-rose-500 text-white'
-            }`}>
-              {activeTheme === 'lumi' ? '⚡' : '🔥'}
-            </div>
-          </div>
-
-          <div>
-            <div className="flex items-center space-x-2">
-              <h3 className="text-sm font-black tracking-tight text-slate-800" style={{ fontFamily: 'var(--font-accent)' }}>
-                {activeTheme === 'lumi' ? 'Lumi (Pokemon Electric & Fairy)' : 'Raka (Pokemon Fire Champion)'}
-              </h3>
-              <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full border ${
-                activeTheme === 'lumi'
-                  ? 'bg-amber-50 text-amber-900 border-amber-200'
-                  : 'bg-rose-50 text-rose-900 border-rose-200'
-              }`}>
-                {activeTheme === 'lumi' ? '🌸 Lembut & Supportive' : '⚡ Galak & No Tolerance'}
-              </span>
-            </div>
-
-            <p className="text-[11px] font-semibold text-slate-400 mt-0.5 flex items-center gap-1">
-              <Sparkles className="w-3 h-3 text-amber-500" />
-              Nasihat Real-Time Karakter Pokemon (FR-07)
-            </p>
-          </div>
+    <section className="rounded-2xl border border-[var(--surface-border)] bg-[var(--surface-bg)] p-4 shadow-sm sm:p-5">
+      <div className="flex items-start gap-3">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl persona-accent-soft text-2xl" aria-hidden="true">
+          {persona.emoji}
         </div>
-
-        {/* Financial Health Meter Pill */}
-        <div className="px-3.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 flex items-center space-x-2.5">
-          <div className="text-right">
-            <span className="block text-[9px] font-extrabold text-slate-400 uppercase">Status Anggaran</span>
-            <span className="text-xs font-black text-slate-700">
-              {budgetUsagePercent <= 50 ? 'Sangat Sehat 🟢' : budgetUsagePercent <= 85 ? 'Waspada 🟡' : 'Bahaya! 🔴'}
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <h2 className="font-extrabold text-[var(--text-main)]">
+              {persona.name} <span className="font-semibold text-[var(--text-sub)]">· {persona.role}</span>
+            </h2>
+            <span className="rounded-full persona-accent-soft px-2.5 py-0.5 text-[11px] font-bold">
+              {isMoka ? 'Terarah' : 'Santai'}
             </span>
           </div>
-
-          <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-black text-xs text-white ${
-            activeTheme === 'lumi' ? 'bg-[#38C7B4]' : 'bg-[#EF4444]'
-          }`}>
-            {budgetUsagePercent}%
-          </div>
+          <p className="mt-1 text-sm text-[var(--text-sub)]">{persona.description}</p>
         </div>
-
+        <Sparkles className="mt-1 h-4 w-4 shrink-0 persona-accent-text" aria-hidden="true" />
       </div>
 
-      {/* Speech Bubble */}
-      <div className={`mt-3 p-3 rounded-xl border text-xs sm:text-sm font-bold flex items-start justify-between gap-3 ${
-        activeTheme === 'lumi'
-          ? 'bg-amber-50/50 border-amber-200 text-amber-950'
-          : 'bg-rose-50/50 border-rose-200 text-rose-950'
-      }`}>
-        <div className="flex items-start space-x-2">
-          {activeTheme === 'lumi' ? (
-            <Zap className="w-4 h-4 mt-0.5 flex-shrink-0 text-amber-600 fill-amber-500/20" />
-          ) : (
-            <Flame className="w-4 h-4 mt-0.5 flex-shrink-0 text-rose-600 fill-rose-500/20" />
-          )}
-          <p className="leading-relaxed">
-            "{currentAdvice}"
-          </p>
-        </div>
-
+      <div className="mt-4 flex flex-col gap-3 rounded-xl bg-[var(--page-bg)] p-4 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-sm leading-6 text-[var(--text-main)]">{currentAdvice}</p>
         <button
-          onClick={() => setAdviceIndex(prev => prev + 1)}
-          className={`flex-shrink-0 text-[11px] font-black px-2.5 py-1 rounded-lg text-white transition ${
-            activeTheme === 'lumi' ? 'bg-[#38C7B4] hover:bg-[#2DAE9C]' : 'bg-[#EF4444] hover:bg-[#DC2626]'
-          }`}
+          type="button"
+          onClick={() => setAdviceIndex((index) => index + 1)}
+          className="inline-flex min-h-9 shrink-0 items-center justify-center gap-1 self-start rounded-lg px-3 text-xs font-bold persona-accent-text transition hover:bg-[var(--surface-bg)] sm:self-auto"
         >
-          Saran Lain &rarr;
+          Ide lain <ArrowRight className="h-3.5 w-3.5" />
         </button>
       </div>
-
-    </div>
+    </section>
   );
 }

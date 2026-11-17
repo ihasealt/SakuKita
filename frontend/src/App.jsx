@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import SidebarNav from './components/SidebarNav';
-import RightTrainerPanel from './components/RightTrainerPanel';
 import CompactOverviewDashboard from './components/CompactOverviewDashboard';
 import AIMascotAdvisor from './components/AIMascotAdvisor';
 import AIInputSection from './components/AIInputSection';
@@ -11,7 +10,7 @@ import AddExpenseModal from './components/AddExpenseModal';
 import './App.css';
 
 export default function App() {
-  const [activeTheme, setActiveTheme] = useState('lumi'); // 'lumi' | 'raka'
+  const [activeTheme, setActiveTheme] = useState('moka');
   const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'input' | 'wallets' | 'history' | 'analytics'
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -36,7 +35,7 @@ export default function App() {
     { id: 5, checked: false, date: '2026-09-01', detail: 'Savings BNI', amount: 200000, account: 'Bank BNI', category: 'Savings' },
     { id: 6, checked: false, date: '2026-09-01', detail: 'Savings Mandiri', amount: 300000, account: 'Bank Mandiri', category: 'Savings' },
     { id: 7, checked: false, date: '2026-09-01', detail: 'Kasih ibu', amount: 500000, account: 'Tunai', category: 'Giving' },
-    { id: 8, checked: false, date: '2026-09-03', detail: 'Beli Potion & Pokeball', amount: 20331, account: 'Bank Seabank', category: 'Giving' },
+    { id: 8, checked: false, date: '2026-09-03', detail: 'Beli camilan', amount: 20331, account: 'Bank Seabank', category: 'Giving' },
     { id: 9, checked: false, date: '2026-09-03', detail: 'Facial Wash + Moist', amount: 92857, account: 'Bank Seabank', category: 'Living' },
     { id: 10, checked: false, date: '2026-09-03', detail: 'Liptint', amount: 64128, account: 'Bank Seabank', category: 'Living' },
     { id: 11, checked: false, date: '2026-09-03', detail: 'Sarung tangan mandi', amount: 23595, account: 'Bank Seabank', category: 'Living' },
@@ -63,10 +62,8 @@ export default function App() {
   };
 
   const totalExpensesSum = transactions.reduce((a, b) => a + (b.amount || 0), 0);
-  const totalBudgetSum = Object.values(wallets).reduce((a, b) => a + b, 0) + totalExpensesSum;
-
   return (
-    <div className="w-screen h-screen overflow-hidden flex flex-row bg-[#F4F7FB] text-slate-800 antialiased font-sans">
+    <div className="flex h-dvh w-full flex-row overflow-hidden bg-[var(--page-bg)] font-sans text-[var(--text-main)] antialiased">
 
       {/* 1. LEFT SIDEBAR NAVIGATION (Full height edge-to-edge) */}
       <SidebarNav
@@ -77,7 +74,7 @@ export default function App() {
       />
 
       {/* 2. CENTER MAIN DASHBOARD VIEW (Full height scrollable) */}
-      <main className="flex-1 h-full overflow-y-auto p-4 md:p-6 lg:p-7 bg-[#F8FAFC]">
+      <main className="min-w-0 flex-1 overflow-y-auto bg-[var(--page-bg)] p-3 sm:p-4 md:p-6 lg:p-7">
 
         {/* VIEW: OVERVIEW (Replicating Compact Reference Image) */}
         {activeTab === 'overview' && (
@@ -101,11 +98,9 @@ export default function App() {
             <AIMascotAdvisor
               activeTheme={activeTheme}
               totalSpent={totalExpensesSum}
-              totalBudget={totalBudgetSum}
             />
 
             <AIInputSection
-              activeTheme={activeTheme}
               onConfirmTransaction={handleConfirmTransaction}
             />
           </div>
@@ -115,7 +110,6 @@ export default function App() {
         {activeTab === 'wallets' && (
           <div className="animate-fade-in">
             <MultiWalletGrid
-              activeTheme={activeTheme}
               wallets={wallets}
               setWallets={setWallets}
               transactions={transactions}
@@ -147,20 +141,12 @@ export default function App() {
 
       </main>
 
-      {/* 3. RIGHT TRAINER PROFILE & NOTIFICATION PANEL (Full height edge-to-edge) */}
-      <RightTrainerPanel
-        activeTheme={activeTheme}
-        setActiveTheme={setActiveTheme}
-        totalSpent={totalExpensesSum}
-        totalBudget={totalBudgetSum}
-        onOpenAddModal={() => setIsExpenseModalOpen(true)}
-      />
-
       {/* Add Expense Modal */}
       <AddExpenseModal
         isOpen={isExpenseModalOpen}
         onClose={() => setIsExpenseModalOpen(false)}
         onAddExpense={handleConfirmTransaction}
+        accounts={Object.keys(wallets)}
       />
 
     </div>

@@ -1,146 +1,176 @@
-import React, { useState } from 'react';
-import { X, Plus, Wallet, Tag } from 'lucide-react';
+import { useState } from 'react';
+import { Plus, Wallet, X } from 'lucide-react';
 
-export default function AddExpenseModal({ isOpen, onClose, onAddExpense }) {
-  const [date, setDate] = useState('4-Sep-2026');
+const getToday = () => {
+  const today = new Date();
+  const localDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000);
+  return localDate.toISOString().slice(0, 10);
+};
+
+export default function AddExpenseModal({ isOpen, onClose, onAddExpense, accounts }) {
+  const [date, setDate] = useState(getToday);
   const [detail, setDetail] = useState('');
   const [amount, setAmount] = useState('');
-  const [account, setAccount] = useState('Gopay');
-  const [category, setCategory] = useState('Giving');
+  const [account, setAccount] = useState(accounts[0] || '');
+  const [category, setCategory] = useState('Living');
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!detail || !amount) return;
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const numericAmount = Number(amount);
+    if (!detail.trim() || !Number.isFinite(numericAmount) || numericAmount <= 0 || !date || !account) return;
 
     onAddExpense({
       id: Date.now(),
       checked: false,
-      date: date || '4-Sep-2026',
-      detail,
-      amount: parseFloat(amount),
+      date,
+      detail: detail.trim(),
+      amount: numericAmount,
       account,
       category,
     });
 
     setDetail('');
     setAmount('');
+    setDate(getToday());
     onClose();
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop animate-fade-in">
-      <div className="bg-[#FAFDF7] border-2 border-[#A8C782] w-full max-w-md rounded-3xl p-6 shadow-2xl space-y-5">
-        
-        {/* Header */}
-        <div className="flex items-center justify-between border-b-2 border-[#D0E5BC] pb-3">
-          <div className="flex items-center space-x-2 text-[#243B1A]">
-            <Wallet className="w-5 h-5 text-emerald-700" />
-            <h2 className="text-lg font-black font-sans">Tambah Pengeluaran Baru</h2>
+    <div className="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4">
+      <section
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="add-expense-title"
+        className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-slate-200 bg-white p-5 shadow-2xl sm:p-6"
+      >
+        <div className="flex items-start justify-between gap-4 border-b border-slate-100 pb-4">
+          <div className="flex items-start gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl persona-accent-soft">
+              <Wallet className="h-5 w-5" />
+            </div>
+            <div>
+              <h2 id="add-expense-title" className="text-lg font-extrabold text-slate-900">
+                Catat pengeluaran
+              </h2>
+              <p className="mt-1 text-sm text-slate-500">Isi detail sederhana agar catatanmu tetap rapi.</p>
+            </div>
           </div>
           <button
+            type="button"
             onClick={onClose}
-            className="p-1 rounded-xl hover:bg-[#E2F0CE] text-slate-600 transition"
+            aria-label="Tutup form"
+            className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
           >
-            <X className="w-5 h-5" />
+            <X className="h-5 w-5" />
           </button>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4 text-xs font-bold text-[#2C4222]">
-          
-          {/* Detail Input */}
+        <form onSubmit={handleSubmit} className="mt-5 space-y-4">
           <div>
-            <label className="block mb-1">Detail Transaksi</label>
+            <label htmlFor="expense-detail" className="mb-1.5 block text-sm font-bold text-slate-700">
+              Untuk apa pengeluaran ini?
+            </label>
             <input
+              id="expense-detail"
               type="text"
               required
-              placeholder="Contoh: Beli Kopi, Sedekah, Jajan..."
+              autoFocus
+              maxLength={100}
+              placeholder="Contoh: Makan siang"
               value={detail}
-              onChange={(e) => setDetail(e.target.value)}
-              className="w-full bg-white border border-[#A5C87D] rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600 text-slate-800"
+              onChange={(event) => setDetail(event.target.value)}
+              className="persona-focus h-11 w-full rounded-xl border border-slate-200 px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400"
             />
           </div>
 
-          {/* Nominal Input */}
-          <div>
-            <label className="block mb-1">Nominal (Rp)</label>
-            <input
-              type="number"
-              required
-              placeholder="Contoh: 15000"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              className="w-full bg-white border border-[#A5C87D] rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600 text-slate-800"
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            {/* Account Selector */}
+          <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label className="block mb-1">Akun</label>
+              <label htmlFor="expense-amount" className="mb-1.5 block text-sm font-bold text-slate-700">
+                Nominal (Rp)
+              </label>
+              <input
+                id="expense-amount"
+                type="number"
+                required
+                min="1"
+                step="1"
+                inputMode="numeric"
+                placeholder="15000"
+                value={amount}
+                onChange={(event) => setAmount(event.target.value)}
+                className="persona-focus h-11 w-full rounded-xl border border-slate-200 px-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400"
+              />
+            </div>
+            <div>
+              <label htmlFor="expense-date" className="mb-1.5 block text-sm font-bold text-slate-700">
+                Tanggal
+              </label>
+              <input
+                id="expense-date"
+                type="date"
+                required
+                value={date}
+                onChange={(event) => setDate(event.target.value)}
+                className="persona-focus h-11 w-full rounded-xl border border-slate-200 px-3 text-sm text-slate-900 outline-none transition"
+              />
+            </div>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label htmlFor="expense-account" className="mb-1.5 block text-sm font-bold text-slate-700">
+                Sumber dana
+              </label>
               <select
+                id="expense-account"
                 value={account}
-                onChange={(e) => setAccount(e.target.value)}
-                className="w-full bg-white border border-[#A5C87D] rounded-xl px-3 py-2 text-xs focus:outline-none text-slate-800"
+                onChange={(event) => setAccount(event.target.value)}
+                required
+                className="persona-focus h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 outline-none transition"
               >
-                <option value="Cash">Cash</option>
-                <option value="Gopay">Gopay</option>
-                <option value="Bank BNI">Bank BNI</option>
-                <option value="Bank Mandiri">Bank Mandiri</option>
-                <option value="Bank Seabank">Bank Seabank</option>
+                {accounts.map((walletName) => <option key={walletName} value={walletName}>{walletName}</option>)}
               </select>
             </div>
-
-            {/* Category Selector */}
             <div>
-              <label className="block mb-1">Kategori</label>
+              <label htmlFor="expense-category" className="mb-1.5 block text-sm font-bold text-slate-700">
+                Kategori
+              </label>
               <select
+                id="expense-category"
                 value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="w-full bg-white border border-[#A5C87D] rounded-xl px-3 py-2 text-xs focus:outline-none text-slate-800"
+                onChange={(event) => setCategory(event.target.value)}
+                className="persona-focus h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 outline-none transition"
               >
-                <option value="Giving">Giving</option>
-                <option value="Playing">Playing</option>
-                <option value="Savings">Savings</option>
-                <option value="Living">Living</option>
+                <option value="Living">Kebutuhan</option>
+                <option value="Playing">Hiburan</option>
+                <option value="Savings">Tabungan</option>
+                <option value="Giving">Berbagi</option>
+                <option value="Makanan & Minuman">Makanan & Minuman</option>
+                <option value="Kebutuhan Harian">Kebutuhan Harian</option>
               </select>
             </div>
           </div>
 
-          {/* Tanggal Input */}
-          <div>
-            <label className="block mb-1">Tanggal</label>
-            <input
-              type="text"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              placeholder="4-Sep-2026"
-              className="w-full bg-white border border-[#A5C87D] rounded-xl px-3 py-2 text-xs text-slate-800"
-            />
-          </div>
-
-          {/* Buttons */}
-          <div className="flex items-center space-x-3 pt-3">
+          <div className="flex flex-col-reverse gap-2 border-t border-slate-100 pt-4 sm:flex-row sm:justify-end">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 py-2.5 rounded-xl font-bold transition"
+              className="min-h-11 rounded-xl border border-slate-200 px-4 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
             >
               Batal
             </button>
             <button
               type="submit"
-              className="flex-1 bg-[#2D4521] hover:bg-[#1E3016] text-white py-2.5 rounded-xl font-bold transition shadow-md flex items-center justify-center gap-1"
+              className="persona-accent-bg inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-sm font-bold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-500"
             >
-              <Plus className="w-4 h-4" />
-              Simpan Transaksi
+              <Plus className="h-4 w-4" />
+              Simpan pengeluaran
             </button>
           </div>
-
         </form>
-      </div>
+      </section>
     </div>
   );
 }

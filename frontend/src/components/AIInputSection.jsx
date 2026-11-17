@@ -1,14 +1,11 @@
-import React, { useState } from 'react';
-import { Sparkles, Camera, Check, Zap, RefreshCw, CheckCircle2, ShieldCheck, FileText, Send, User, Tag, Wallet, PlusCircle } from 'lucide-react';
+import { useState } from 'react';
+import { Sparkles, Check, RefreshCw, CheckCircle2, FileText, Send } from 'lucide-react';
 
-export default function AIInputSection({ activeTheme, onConfirmTransaction }) {
+export default function AIInputSection({ onConfirmTransaction }) {
   const [nlpInput, setNlpInput] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [parsedData, setParsedData] = useState(null);
   const [activeTabMode, setActiveTabMode] = useState('text'); // 'text' | 'ocr'
-
-  const [selectedWallet, setSelectedWallet] = useState('Gopay');
-  const [selectedCategory, setSelectedCategory] = useState('Makanan & Minuman');
 
   // Simulated Receipt OCR presets
   const sampleReceipts = [
@@ -42,8 +39,8 @@ export default function AIInputSection({ activeTheme, onConfirmTransaction }) {
 
     setTimeout(() => {
       let amount = 18000;
-      let category = selectedCategory || 'Makanan & Minuman';
-      let wallet = selectedWallet || 'Gopay';
+      let category = 'Makanan & Minuman';
+      let wallet = 'Gopay';
 
       const lower = query.toLowerCase();
 
@@ -137,7 +134,7 @@ export default function AIInputSection({ activeTheme, onConfirmTransaction }) {
         {/* Mode Switcher */}
         <div className="flex items-center justify-between border-b pb-3 border-slate-100">
           <div className="flex items-center space-x-2">
-            <Sparkles className="w-5 h-5 text-teal-600" />
+            <Sparkles className="w-5 h-5 persona-accent-text" />
             <h3 className="text-sm font-black text-slate-800">
               Metode Input Transaksi Otomatis
             </h3>
@@ -147,7 +144,7 @@ export default function AIInputSection({ activeTheme, onConfirmTransaction }) {
             <button
               onClick={() => setActiveTabMode('text')}
               className={`px-3 py-1 text-xs font-bold rounded-lg transition ${
-                activeTabMode === 'text' ? 'bg-white text-slate-800 shadow-xs font-black' : 'text-slate-500'
+                activeTabMode === 'text' ? 'persona-accent-soft shadow-xs font-black' : 'text-slate-500'
               }`}
             >
               Natural Language (Teks)
@@ -155,7 +152,7 @@ export default function AIInputSection({ activeTheme, onConfirmTransaction }) {
             <button
               onClick={() => setActiveTabMode('ocr')}
               className={`px-3 py-1 text-xs font-bold rounded-lg transition ${
-                activeTabMode === 'ocr' ? 'bg-white text-slate-800 shadow-xs font-black' : 'text-slate-500'
+                activeTabMode === 'ocr' ? 'persona-accent-soft shadow-xs font-black' : 'text-slate-500'
               }`}
             >
               Scan Struk (Vision OCR)
@@ -173,12 +170,12 @@ export default function AIInputSection({ activeTheme, onConfirmTransaction }) {
                 onChange={(e) => setNlpInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleProcessNLP()}
                 placeholder="Contoh: 'Beli soto ayam 18rb pake gopay' atau 'Jajan kopi 25k BCA'..."
-                className="flex-1 py-2 px-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 placeholder-slate-400 outline-none focus:bg-white focus:border-teal-400"
+                className="persona-focus flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs font-semibold text-slate-800 outline-none placeholder:text-slate-400 focus:bg-white"
               />
               <button
                 onClick={() => handleProcessNLP()}
                 disabled={isProcessing || !nlpInput.trim()}
-                className="px-4 py-2 bg-[#38C7B4] hover:bg-[#2DAE9C] text-white rounded-xl text-xs font-black transition flex items-center gap-1.5 disabled:opacity-50"
+                className="persona-accent-bg flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-black transition disabled:opacity-50"
               >
                 {isProcessing ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
                 <span>Ekstrak AI</span>
@@ -200,7 +197,7 @@ export default function AIInputSection({ activeTheme, onConfirmTransaction }) {
                     setNlpInput(sample);
                     handleProcessNLP(sample);
                   }}
-                  className="px-2.5 py-0.5 rounded-lg bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-slate-600 font-semibold transition"
+                  className="persona-accent-hover rounded-lg bg-slate-100 px-2.5 py-0.5 font-semibold text-slate-600 transition"
                 >
                   "{sample}"
                 </button>
@@ -220,10 +217,10 @@ export default function AIInputSection({ activeTheme, onConfirmTransaction }) {
                 <div
                   key={idx}
                   onClick={() => handleSimulateOCR(sample)}
-                  className="p-3 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-teal-50/50 hover:border-teal-300 cursor-pointer transition flex items-center justify-between"
+                  className="persona-accent-hover flex cursor-pointer items-center justify-between rounded-xl border border-slate-200 bg-slate-50/70 p-3 transition"
                 >
                   <div className="flex items-center space-x-2.5">
-                    <FileText className="w-5 h-5 text-teal-600" />
+                    <FileText className="w-5 h-5 persona-accent-text" />
                     <div>
                       <h4 className="text-xs font-bold text-slate-800">{sample.merchant}</h4>
                       <p className="text-[10px] text-slate-400 font-medium">{sample.items.join(', ')}</p>
@@ -242,13 +239,13 @@ export default function AIInputSection({ activeTheme, onConfirmTransaction }) {
 
       {/* 1-Tap AI Confirmation Card */}
       {parsedData && (
-        <div className="p-4 sm:p-5 rounded-2xl border-2 border-teal-300 bg-white shadow-sm animate-fade-in space-y-3">
+        <div className="persona-accent-border animate-fade-in space-y-3 rounded-2xl border-2 bg-white p-4 shadow-sm sm:p-5">
           <div className="flex items-center justify-between border-b pb-2.5 border-slate-100">
             <div className="flex items-center space-x-2">
-              <CheckCircle2 className="w-5 h-5 text-teal-600" />
+              <CheckCircle2 className="w-5 h-5 persona-accent-text" />
               <h4 className="text-sm font-black text-slate-800">Hasil Parsing AI (1-Tap Konfirmasi)</h4>
             </div>
-            <span className="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-200">
+            <span className="persona-accent-soft rounded-full border border-[var(--surface-border)] px-2.5 py-0.5 text-[10px] font-extrabold">
               Confidence: {Math.round(parsedData.confidence * 100)}%
             </span>
           </div>
@@ -281,7 +278,7 @@ export default function AIInputSection({ activeTheme, onConfirmTransaction }) {
             </button>
             <button
               onClick={handleConfirmAndSave}
-              className="px-4 py-1.5 rounded-xl bg-[#38C7B4] hover:bg-[#2DAE9C] text-white text-xs font-black shadow-xs transition flex items-center gap-1.5"
+              className="persona-accent-bg flex items-center gap-1.5 rounded-xl px-4 py-1.5 text-xs font-black shadow-xs transition"
             >
               <Check className="w-3.5 h-3.5 stroke-[3]" />
               <span>Konfirmasi & Simpan Buku Kas</span>

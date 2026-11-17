@@ -1,32 +1,19 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { 
   Plus, 
-  Filter, 
   CheckSquare, 
   Square, 
   Trash2, 
   Wallet, 
   ReceiptText, 
   TrendingDown, 
-  CheckCircle2, 
   Search,
-  ArrowUpDown,
-  Tag
 } from 'lucide-react';
 
 export default function FinanceView({ transactions, setTransactions, onOpenAddModal, searchTerm }) {
   const [selectedAccountFilter, setSelectedAccountFilter] = useState('All');
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState('All');
   const [localSearch, setLocalSearch] = useState('');
-
-  // Account budget baselines
-  const accountBudgets = {
-    Cash: 1600000,
-    Gopay: 500000,
-    'Bank BNI': 2500000,
-    'Bank Mandiri': 3500000,
-    'Bank Seabank': 1200000,
-  };
 
   // Filtered transactions
   const effectiveSearch = localSearch || searchTerm || '';
@@ -108,7 +95,7 @@ export default function FinanceView({ transactions, setTransactions, onOpenAddMo
       <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div>
           <h2 className="text-base font-black text-slate-800 tracking-tight flex items-center gap-2" style={{ fontFamily: 'var(--font-accent)' }}>
-            <ReceiptText className="w-5 h-5 text-teal-600" />
+            <ReceiptText className="w-5 h-5 persona-accent-text" />
             Riwayat Transaksi & Pembukuan Kas
           </h2>
           <p className="text-xs text-slate-400 font-semibold mt-0.5">
@@ -123,9 +110,9 @@ export default function FinanceView({ transactions, setTransactions, onOpenAddMo
             <span>Pengeluaran: <strong className="font-black text-rose-800">{formatRupiah(totalExpenses)}</strong></span>
           </div>
 
-          <div className="px-3 py-1.5 rounded-xl bg-teal-50 border border-teal-200 text-teal-700 flex items-center gap-1.5 text-xs font-bold">
-            <Wallet className="w-3.5 h-3.5 text-teal-600" />
-            <span>Sisa Kas: <strong className="font-black text-teal-800">{formatRupiah(currentSisa)}</strong></span>
+          <div className="persona-accent-soft flex items-center gap-1.5 rounded-xl border border-[var(--surface-border)] px-3 py-1.5 text-xs font-bold">
+            <Wallet className="h-3.5 w-3.5" />
+            <span>Sisa Kas: <strong className="font-black">{formatRupiah(currentSisa)}</strong></span>
           </div>
 
           <div className="px-2.5 py-1.5 rounded-xl bg-slate-100 text-slate-600 text-xs font-bold">
@@ -145,7 +132,7 @@ export default function FinanceView({ transactions, setTransactions, onOpenAddMo
             value={localSearch}
             onChange={(e) => setLocalSearch(e.target.value)}
             placeholder="Cari transaksi atau dompet..."
-            className="w-full pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 placeholder-slate-400 outline-none focus:bg-white focus:border-teal-400 transition"
+            className="persona-focus w-full rounded-xl border border-slate-200 bg-slate-50 py-1.5 pl-9 pr-3 text-xs font-semibold text-slate-800 outline-none transition placeholder:text-slate-400 focus:bg-white"
           />
         </div>
 
@@ -157,7 +144,7 @@ export default function FinanceView({ transactions, setTransactions, onOpenAddMo
             <select
               value={selectedAccountFilter}
               onChange={(e) => setSelectedAccountFilter(e.target.value)}
-              className="bg-slate-50 border border-slate-200 text-slate-800 rounded-xl px-2.5 py-1.5 text-xs font-semibold outline-none focus:border-teal-400"
+              className="persona-focus rounded-xl border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-semibold text-slate-800 outline-none"
             >
               <option value="All">Semua Akun</option>
               <option value="Tunai">Tunai / Cash</option>
@@ -175,7 +162,7 @@ export default function FinanceView({ transactions, setTransactions, onOpenAddMo
             <select
               value={selectedCategoryFilter}
               onChange={(e) => setSelectedCategoryFilter(e.target.value)}
-              className="bg-slate-50 border border-slate-200 text-slate-800 rounded-xl px-2.5 py-1.5 text-xs font-semibold outline-none focus:border-teal-400"
+              className="persona-focus rounded-xl border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-semibold text-slate-800 outline-none"
             >
               <option value="All">Semua Kategori</option>
               <option value="Living">Living (Kebutuhan)</option>
@@ -201,7 +188,7 @@ export default function FinanceView({ transactions, setTransactions, onOpenAddMo
           {/* + Catat Pengeluaran */}
           <button
             onClick={onOpenAddModal}
-            className="bg-[#38C7B4] hover:bg-[#2DAE9C] text-white px-3.5 py-1.5 rounded-xl text-xs font-black transition flex items-center gap-1.5 shadow-xs"
+            className="persona-accent-bg flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-black transition shadow-xs"
           >
             <Plus className="w-4 h-4 stroke-[2.5]" />
             <span>+ Catat Transaksi</span>
@@ -219,7 +206,7 @@ export default function FinanceView({ transactions, setTransactions, onOpenAddMo
                 <th className="py-2.5 px-3.5 w-10 text-center">
                   <button onClick={toggleSelectAll} className="focus:outline-none">
                     {filteredTransactions.length > 0 && filteredTransactions.every(t => t.checked) ? (
-                      <CheckSquare className="w-4 h-4 text-teal-600" />
+                      <CheckSquare className="w-4 h-4 persona-accent-text" />
                     ) : (
                       <Square className="w-4 h-4 text-slate-300 hover:text-slate-500" />
                     )}
@@ -244,13 +231,13 @@ export default function FinanceView({ transactions, setTransactions, onOpenAddMo
                 filteredTransactions.map((item) => (
                   <tr 
                     key={item.id}
-                    className={`transition-colors hover:bg-slate-50/70 ${item.checked ? 'bg-teal-50/40' : ''}`}
+                    className={`transition-colors hover:bg-slate-50/70 ${item.checked ? 'persona-accent-soft' : ''}`}
                   >
                     {/* Checkbox */}
                     <td className="py-2.5 px-3.5 text-center">
                       <button onClick={() => toggleCheckbox(item.id)} className="focus:outline-none">
                         {item.checked ? (
-                          <CheckSquare className="w-4 h-4 text-teal-600" />
+                          <CheckSquare className="w-4 h-4 persona-accent-text" />
                         ) : (
                           <Square className="w-4 h-4 text-slate-300 hover:text-slate-400" />
                         )}

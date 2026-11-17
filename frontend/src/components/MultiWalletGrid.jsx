@@ -1,7 +1,6 @@
-import React from 'react';
-import { Wallet, CreditCard, Smartphone, PlusCircle, ShieldCheck, ArrowUpRight } from 'lucide-react';
+import { Wallet, CreditCard, Smartphone, PlusCircle, ShieldCheck } from 'lucide-react';
 
-export default function MultiWalletGrid({ activeTheme, wallets, setWallets, transactions }) {
+export default function MultiWalletGrid({ wallets, setWallets, transactions }) {
 
   const formatRupiah = (num) => {
     return new Intl.NumberFormat('id-ID', {
@@ -24,7 +23,7 @@ export default function MultiWalletGrid({ activeTheme, wallets, setWallets, tran
       case 'QRIS':
         return <Smartphone className="w-4 h-4 text-indigo-600" />;
       default:
-        return <Wallet className="w-4 h-4 text-teal-600" />;
+        return <Wallet className="w-4 h-4 persona-accent-text" />;
     }
   };
 
@@ -37,7 +36,7 @@ export default function MultiWalletGrid({ activeTheme, wallets, setWallets, tran
       <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
           <h2 className="text-base font-black tracking-tight text-slate-800 flex items-center gap-2" style={{ fontFamily: 'var(--font-accent)' }}>
-            <Wallet className="w-5 h-5 text-teal-600" />
+            <Wallet className="w-5 h-5 persona-accent-text" />
             FR-05 Manajemen Multi-Wallet
           </h2>
           <p className="text-xs text-slate-400 font-semibold mt-0.5">
@@ -45,11 +44,11 @@ export default function MultiWalletGrid({ activeTheme, wallets, setWallets, tran
           </p>
         </div>
 
-        <div className="px-4 py-2 rounded-xl bg-teal-50 border border-teal-200 flex items-center space-x-2.5">
-          <ShieldCheck className="w-5 h-5 text-teal-600" />
+        <div className="persona-accent-soft flex items-center space-x-2.5 rounded-xl border border-[var(--surface-border)] px-4 py-2">
+          <ShieldCheck className="w-5 h-5" />
           <div>
-            <span className="block text-[10px] font-black uppercase text-teal-700">Total Saldo Gabungan</span>
-            <span className="text-sm md:text-base font-black text-teal-900 tracking-tight">
+            <span className="block text-[10px] font-black uppercase">Total Saldo Gabungan</span>
+            <span className="text-sm font-black tracking-tight md:text-base">
               {formatRupiah(totalBalance)}
             </span>
           </div>
@@ -64,7 +63,7 @@ export default function MultiWalletGrid({ activeTheme, wallets, setWallets, tran
           return (
             <div
               key={walletName}
-              className="p-4 rounded-xl border border-slate-200/80 bg-white hover:border-teal-300 transition-all shadow-xs flex flex-col justify-between space-y-3"
+              className="persona-accent-hover flex flex-col justify-between space-y-3 rounded-xl border border-slate-200/80 bg-white p-4 shadow-xs transition-all"
             >
               {/* Top Row: Icon & Name */}
               <div className="flex items-center justify-between">
@@ -104,7 +103,7 @@ export default function MultiWalletGrid({ activeTheme, wallets, setWallets, tran
                       }));
                     }
                   }}
-                  className="flex items-center gap-1 text-[11px] font-black text-teal-600 hover:text-teal-700"
+                  className="persona-accent-text flex items-center gap-1 text-[11px] font-black"
                 >
                   <PlusCircle className="w-3.5 h-3.5" />
                   <span>Top Up</span>
