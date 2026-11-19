@@ -308,3 +308,6 @@ export default function FinanceView({ transactions, setTransactions, onOpenAddMo
     </div>
   );
 }
+
+
+// Update 19 Nov 2026
