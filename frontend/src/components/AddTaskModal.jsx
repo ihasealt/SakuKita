@@ -13,7 +13,7 @@ export default function AddTaskModal({ isOpen, onClose, onAddTask }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!title) return;
+    if (!title) return; 
 
     let progress = 0;
     if (status === 'Completed') progress = 100;
@@ -172,7 +172,7 @@ export default function AddTaskModal({ isOpen, onClose, onAddTask }) {
           </div>
 
         </form>
-      </div>
+      </div>m
     </div>
   );
 }

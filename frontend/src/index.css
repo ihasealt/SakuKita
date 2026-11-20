@@ -11,17 +11,17 @@
 }
 
 :root {
-  --page-bg: #f5f2eb;
+  --page-bg: #FAF3EB;
   --surface-bg: #fffefa;
   --surface-border: #e8e1d5;
-  --text-main: #29323b;
-  --text-sub: #68737d;
-  --text-muted: #929ba3;
-  --theme-accent: #526e89;
-  --theme-accent-hover: #3e5a75;
-  --theme-accent-soft: #e6edf3;
-  --theme-accent-contrast: #ffffff;
-  --theme-accent-ink: #344b61;
+  --text-main: #1F2226;
+  --text-sub: #5E6570;
+  --text-muted: #8E96A0;
+  --theme-accent: #EDB82E;
+  --theme-accent-hover: #DDA41C;
+  --theme-accent-soft: #FDEBB8;
+  --theme-accent-contrast: #1F2226;
+  --theme-accent-ink: #3D2D0C;
   color-scheme: light;
 }
 

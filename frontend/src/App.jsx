@@ -7,6 +7,7 @@ import MultiWalletGrid from './components/MultiWalletGrid';
 import AnalyticsCharts from './components/AnalyticsCharts';
 import FinanceView from './components/FinanceView';
 import AddExpenseModal from './components/AddExpenseModal';
+import ThemeSelectionPage from './components/ThemeSelectionPage';
 import './App.css';
 
 export default function App() {
@@ -63,31 +64,32 @@ export default function App() {
 
   const totalExpensesSum = transactions.reduce((a, b) => a + (b.amount || 0), 0);
   return (
-    <div className="flex h-dvh w-full flex-row overflow-hidden bg-[var(--page-bg)] font-sans text-[var(--text-main)] antialiased">
+    <div className="flex h-dvh w-full flex-col overflow-hidden bg-[#FAF3EB] font-sans text-[var(--text-main)] antialiased">
 
-      {/* 1. LEFT SIDEBAR NAVIGATION (Full height edge-to-edge) */}
       <SidebarNav
         activeTab={activeTab}
         setActiveTab={setActiveTab}
-        activeTheme={activeTheme}
-        setActiveTheme={setActiveTheme}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
       />
 
-      {/* 2. CENTER MAIN DASHBOARD VIEW (Full height scrollable) */}
-      <main className="min-w-0 flex-1 overflow-y-auto bg-[var(--page-bg)] p-3 sm:p-4 md:p-6 lg:p-7">
+      <main className="min-w-0 flex-1 overflow-y-auto bg-[#FAF3EB] p-3 sm:p-4 md:p-6 lg:p-7">
 
-        {/* VIEW: OVERVIEW (Replicating Compact Reference Image) */}
+        {/* VIEW: WELCOME DASHBOARD */}
         {activeTab === 'overview' && (
           <div className="animate-fade-in">
             <CompactOverviewDashboard
+              setActiveTab={setActiveTab}
+            />
+          </div>
+        )}
+
+        {activeTab === 'themes' && (
+          <div className="animate-fade-in">
+            <ThemeSelectionPage
               activeTheme={activeTheme}
               setActiveTheme={setActiveTheme}
-              wallets={wallets}
-              transactions={transactions}
-              onOpenAddModal={() => setIsExpenseModalOpen(true)}
               setActiveTab={setActiveTab}
-              searchTerm={searchTerm}
-              setSearchTerm={setSearchTerm}
             />
           </div>
         )}
