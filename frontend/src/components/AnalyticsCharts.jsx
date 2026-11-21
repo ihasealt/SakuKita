@@ -150,3 +150,5 @@ export default function AnalyticsCharts({ activeTheme, transactions }) {
     </div>
   );
 }
+
+// Detailed 22 Nov 2026
