@@ -175,5 +175,4 @@ export default function AddExpenseModal({ isOpen, onClose, onAddExpense, account
   );
 }
 
-// Update 23 Nov 2026
-// Detailed at 23 Nov 2026 | alr Up to Date
+// Detailed 24 Nov 2026
